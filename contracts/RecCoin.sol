@@ -48,3 +48,21 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
         emit Transfer(address(0), msg.sender, totalSupply);
     }
 }
+
+
+/**
+     * @dev Internal function to transfer tokens from one account to another.
+     * @param sender The address of the sender.
+     * @param recipient The address of the recipient.
+     * @param amount The amount of tokens to transfer.
+     */
+
+    function _transfer(address sender, address recipient, uint256 amount) internal {
+        require(sender != address(0), "RecCoin: transfer from the zero address");
+        require(recipient != address(0), "RecCoin: transfer to the zero address");
+        require(balanceOf[sender] >= amount, "RecCoin: transfer amount exceeds balance");
+
+        balanceOf[sender] = balanceOf[sender].sub(amount);
+        balanceOf[recipient] = balanceOf[recipient].add(amount);
+        emit Transfer(sender, recipient, amount);
+    }
