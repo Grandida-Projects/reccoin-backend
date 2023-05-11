@@ -33,4 +33,23 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
     uint256 public totalSupply;  // The total supply of the token
 
 
+
+        /**
+     * @dev Constructor function.
+     * It initializes the token contract with the provided initial supply of tokens.
+     * The initial supply is assigned to the contract deployer.
+     */
+    constructor(string memory _name, string memory _symbol, uint8 _decimals, uint256 initialSupply) {
+        require(initialSupply > 0, "RecCoin: initial supply cannot be zero");
+
+        name = _name;
+        symbol = _symbol;
+        decimals = _decimals;
+        totalSupply = initialSupply.mul(10 ** _decimals);
+        balanceOf[msg.sender] = totalSupply;
+
+        emit Transfer(address(0), msg.sender, totalSupply);
+    }
+
+
 }
