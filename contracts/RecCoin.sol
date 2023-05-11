@@ -16,7 +16,6 @@ import "@openzeppelin/contracts/utils/Address.sol";
 // Import the Ownable contract, which provides basic authorization control.
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-
 /**
  * @title RecCoin
  * @dev Implementation of the RecCoin ERC20 token contract.
@@ -27,10 +26,8 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
     using SafeMath for uint256;
     using Address for address;
 
-    string public name;  // The name of the token
-    string public symbol;  // The symbol of the token
-    uint8 public decimals;  // The number of decimals for token display
-    uint256 public totalSupply;  // The total supply of the token
-
-
+    string public name; // The name of the token
+    string public symbol; // The symbol of the token
+    uint8 public decimals; // The number of decimals for token display
+    uint256 public totalSupply; // The total supply of the tokens
 }
