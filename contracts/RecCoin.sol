@@ -26,15 +26,12 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
     using SafeMath for uint256;
     using Address for address;
 
-
     string public name;  // The name of the token
     string public symbol;  // The symbol of the token
     uint8 public decimals;  // The number of decimals for token display
     uint256 public totalSupply;  // The total supply of the token
 
-
-
-       /**
+     /**
      * @dev Constructor function.
      * It initializes the token contract with the provided initial supply of tokens.
      * The initial supply is assigned to the contract deployer.
@@ -50,5 +47,4 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
 
         emit Transfer(address(0), msg.sender, totalSupply);
     }
-
 }
