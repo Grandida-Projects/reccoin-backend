@@ -30,7 +30,8 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
     string public symbol;  // The symbol of the token
     uint8 public decimals;  // The number of decimals for token display
     uint256 public totalSupply;  // The total supply of the token
-
+     
+     
      /**
      * @dev Constructor function.
      * It initializes the token contract with the provided initial supply of tokens.
@@ -47,10 +48,30 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
 
         emit Transfer(address(0), msg.sender, totalSupply);
     }
-}
+
+      /**
+     * @dev Internal function to approve the spender to spend tokens on behalf of the owner.
+     * @param owner The address of the token owner.
+     * @param spender The address of the spender.
+     * @param amount The amount of tokens to allow.
+     * 
+     */
+     
+    function _approve(address owner, address spender, uint256 amount) internal  {
+        /* prevent a zero address from being passed as a parameter to this function 
+        for both the owner and the spender of the allowance
+        */
+        require(owner != address(0), "RecCoin: approve from the zero address");
+        require(spender != address(0), "RecCoin: approve to the zero address");
+         // update the allowance mapping variable to register spender to spend a specified amount of the owner's token
+        allowance[owner][spender] = amount;
+        // log out the corresponding information related to the current transaction
+        emit Approval(owner, spender, amount);
+        
+      }
 
 
-/**
+    /**
      * @dev Internal function to transfer tokens from one account to another.
      * @param sender The address of the sender.
      * @param recipient The address of the recipient.
