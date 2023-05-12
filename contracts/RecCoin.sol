@@ -32,5 +32,13 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
     uint8 public decimals;  // The number of decimals for token display
     uint256 public totalSupply;  // The total supply of the token
 
-
+    /**
+     * @dev Burns tokens from the specified account.
+     * Only the contract owner can call this function.
+     * @param amount The amount of tokens to burn.
+     */
+     
+    function burn(uint256 amount) public onlyOwner {
+        _burn(msg.sender, amount);
+    }
 }
