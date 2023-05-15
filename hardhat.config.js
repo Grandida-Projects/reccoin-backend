@@ -12,7 +12,7 @@ module.exports = {
   solidity: "0.8.18",
   networks: {
     sepolia: {
-      url: QUICKNODE_RPC_URL,
+      url: RPC_URL,
       chainId: 11155111,
       accounts: [PRIVATE_KEY],
       gasPrice: 35000000000,
