@@ -9,8 +9,8 @@ describe("RecCoin", function() {
   let account1;
   let account2;
   let accountss;
-  // assumme base denomination of the RecCoin uses granular precision of RecCoin/10^3
-  let _decimals = 3;
+  // assumme base denomination of the RecCoin token is handled using ethers.utils.parseEther
+  let _decimals = 0;
 
   const initialSupply = ethers.utils.parseEther("1000");
 
@@ -57,19 +57,43 @@ describe("RecCoin", function() {
 
   // The following are tests on the transfer function of the RecCoin smart contract - line 63 of RecCoin.sol
   describe("Transfers", function() {
-    it("Should transfer tokens from sender to account1", async function() {
+    it("Should transfer tokens from sender to account1 and account2", async function() {
       const initialBalanceOwner = await recCoin.balanceOf(owner.address);
-      const initialBalanceRecipient = await recCoin.balanceOf(account1.address);
+      const initialBalanceAccount1 = await recCoin.balanceOf(account1.address);
+      const initialBalanceAccount2 = await recCoin.balanceOf(account2.address);
       const amount = ethers.utils.parseEther("80");
-
-      // Call the transfer function
+  
+      // Call the transfer function to account1
       await recCoin.connect(owner).transfer(account1.address, amount);
-
-      // Check and confirm respective balances of RecCoin
-      expect(await recCoin.balanceOf(owner.address)).to.equal(initialBalanceOwner.sub(amount));
-      expect(await recCoin.balanceOf(account1.address)).to.equal(initialBalanceRecipient.add(amount));
-
-      console.log("RecCoin successfully transferred from " + owner.address + " to " + account1.address);
+  
+      // Get the new balances after transferring to account1
+      const ownerBalanceOnDebit1 = await recCoin.balanceOf(owner.address);
+      const newBalanceAccount1 = await recCoin.balanceOf(account1.address);
+  
+      // Check and confirm balances after transferring to account1
+      expect(ownerBalanceOnDebit1).to.equal(initialBalanceOwner.sub(amount));
+      expect(newBalanceAccount1).to.equal(initialBalanceAccount1.add(amount));
+      console.log(amount.toString() + " RecCoin transferred from " + owner.address + " to " + account1.address);
+      console.log("Owner balance now: " + ownerBalanceOnDebit1.toString());
+      console.log(`-----------------------------------------------`)
+  
+      // Call the transfer function to account2
+      await recCoin.connect(owner).transfer(account2.address, amount);
+  
+      // Get the new balances after transferring to account2
+      const ownerBalanceOnDebit2 = await recCoin.balanceOf(owner.address);
+      const newBalanceAccount2 = await recCoin.balanceOf(account2.address);
+  
+      // Check and confirm balances after transferring to account2
+      expect(ownerBalanceOnDebit2).to.equal(ownerBalanceOnDebit1.sub(amount));
+      expect(newBalanceAccount2).to.equal(initialBalanceAccount2.add(amount));
+  
+      console.log(amount.toString() + " RecCoin transferred from " + owner.address + " to " + account2.address);
+      console.log("Final balance of owner with address: " + owner.address + " is " + ownerBalanceOnDebit2.toString());
+      console.log("New balance of account1 with address: " + account1.address + " is " + newBalanceAccount1.toString());
+      console.log("New balance of account2 with address: " + account2.address + " is " + newBalanceAccount2.toString());
     });
   });
+  
 });
+

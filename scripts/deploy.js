@@ -20,7 +20,7 @@ async function main() {
   const RecCoin = await ethers.getContractFactory("RecCoin");
 
   // Deploy the RecCoin contract
-  const recCoin = await RecCoin.deploy("RecCoin", "REC", 18, ethers.utils.parseEther("1000"));
+  const recCoin = await RecCoin.deploy("RecCoin", "REC", 0, ethers.utils.parseEther("1000"));
 
   console.log("RecCoin address:", recCoin.address);
 }
