@@ -4,29 +4,29 @@
 // You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
-const hre = require("hardhat");
+
+// Deploy script for RecCoin smart contract on Hardhat
+
+// Import Hardhat environment and Ethereum libraries
+const { ethers } = require("hardhat");
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  // Set up Ethereum wallet
+  const [deployer] = await ethers.getSigners();
 
-  const lockedAmount = hre.ethers.utils.parseEther("0.001");
+  console.log("Deploying the RecCoin contract with the account:", deployer.address);
 
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  // Set up the RecCoin contract factory
+  const RecCoin = await ethers.getContractFactory("RecCoin");
 
-  await lock.deployed();
+  // Deploy the RecCoin contract
+  const recCoin = await RecCoin.deploy("RecCoin", "REC", 0, ethers.utils.parseEther("1000"));
 
-  console.log(
-    `Lock with ${ethers.utils.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
-  );
+  console.log("RecCoin address:", recCoin.address);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
+// Run the main function
+main().then(() => process.exit(0)).catch(error => {
   console.error(error);
-  process.exitCode = 1;
+  process.exit(1);
 });
