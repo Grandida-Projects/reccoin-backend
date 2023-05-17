@@ -32,5 +32,20 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
     uint8 public decimals;  // The number of decimals for token display
     uint256 public totalSupply;  // The total supply of the token
 
+    /**
+     * @dev Mints new tokens and adds them to the specified account.
+     * Only the contract owner can call this function.
+     * @param account The address to which new tokens will be minted.
+     * @param amount The amount of tokens to mint.
+     */
+    function mint(address account, uint256 amount) public onlyOwner {
+        require(account != address(0), "RecCoin: mint to the zero address");
+
+        totalSupply = totalSupply.add(amount);
+        balanceOf[account] = balanceOf[account].add(amount);
+
+        emit Transfer(address(0), account, amount);
+    }
+
 
 }
