@@ -20,7 +20,7 @@ describe("RecCoin", function () {
     [owner, account1, account2, ...accountss] = await ethers.getSigners();
 
     // Deploy the RecCoin contract
-    recCoin = await RecCoin.connect(owner).deploy("RecCoin", "REC", _decimals, initialSupply);
+    recCoin = await RecCoin.deploy("RecCoin", "REC", _decimals, initialSupply);
 
     console.log("RecCoin contract successfully deployed");
     console.log(`-----------------------------------------------`)
@@ -93,6 +93,59 @@ describe("RecCoin", function () {
       console.log("New balance of account1 with address: " + account1.address + " is " + Number(ethers.utils.formatEther(newBalanceAccount1)));
       console.log("New balance of account2 with address: " + account2.address + " is " + Number(ethers.utils.formatEther(newBalanceAccount2)));
     });
+  });
+
+  // This testes the burn function of the RecCoin smart contract - line 114 of RecCoin.sol
+  describe("burn", function () {
+    it("Burns a specifies number of token and removes it from total supply", async function () {
+
+      const amountToBurn = ethers.utils.parseEther("80");
+
+      // Total supply before burning some ReCoin
+      const initialTotalSupply = await recCoin.totalSupply();
+      console.log("Total supply before burning some Recoin is ", Number(ethers.utils.formatEther(initialTotalSupply)))
+
+      // Call the burn function
+      const burnIt = await recCoin.burn(amountToBurn);
+      // Wait for the transaction to complete
+      await burnIt.wait(1)
+
+      // Total supply after burning some ReCoin
+
+      const finalTotalSupply = await recCoin.totalSupply();
+      console.log("Total supply after burning some Recoin is ", Number(ethers.utils.formatEther(finalTotalSupply)))
+
+      expect(finalTotalSupply).to.equal(initialTotalSupply.sub(amountToBurn));
+
+    });
+
+
+    it("Ensure only the owner can burn ReCoin", async function () {
+
+      const amountToBurn = ethers.utils.parseEther("80");
+
+      const recoinAccount2 = await recCoin.connect(account2);
+
+      // Throw an error when a non-owner wants to burn reCoin
+      await expect(recoinAccount2.burn(amountToBurn)).to.be.revertedWith("Ownable: caller is not the owner")
+
+    });
+
+    it("Prevents burning of more than the ReCoin total supply", async function () {
+
+
+      // Total supply before burning some ReCoin is 1000
+      const initialTotalSupply = await recCoin.totalSupply();
+
+      const amountToBurn = ethers.utils.parseEther("2000");
+
+      console.log("Total supply before burning some Recoin is ", Number(ethers.utils.formatEther(initialTotalSupply)))
+
+      // Revert with an error when the owner attemps to burn more than the total supply
+      await expect(recCoin.burn(amountToBurn)).to.be.revertedWith("RecCoin: burn amount exceeds balance")
+
+    });
+
   });
 
 });
