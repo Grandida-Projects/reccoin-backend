@@ -32,6 +32,7 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
     uint8 public decimals;  // The number of decimals for token display
     uint256 public totalSupply;  // The total supply of the token
 
+
     mapping (address => uint256) public balanceOf;  // Mapping to track the balanceOf of token holders
     mapping (address => mapping (address => uint256)) public allowance;  // Mapping to track the allowances granted by token holders
 
