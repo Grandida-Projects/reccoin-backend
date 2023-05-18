@@ -32,7 +32,6 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
     uint8 public decimals;  // The number of decimals for token display
     uint256 public totalSupply;  // The total supply of the token
 
-
     mapping (address => uint256) public balanceOf;  // Mapping to track the balanceOf of token holders
     mapping (address => mapping (address => uint256)) public allowance;  // Mapping to track the allowances granted by token holders
 
@@ -41,7 +40,6 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
      * It initializes the token contract with the provided initial supply of tokens.
      * The initial supply is assigned to the contract deployer.
      */
-
     constructor(string memory _name, string memory _symbol, uint8 _decimals, uint256 initialSupply) {
         require(initialSupply > 0, "RecCoin: initial supply cannot be zero");
 
@@ -163,3 +161,4 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
         emit Transfer(account, address(0), amount);
     }
 }
+
