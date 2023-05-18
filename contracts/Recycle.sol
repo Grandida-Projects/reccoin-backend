@@ -126,16 +126,15 @@ contract Recycle is Ownable {
         uint256 _maxPricePerKg,
         bool _active
     ) public returns (bool success) {
-    bytes memory nameInBytes = bytes(name);
+    bytes memory nameInBytes = bytes(_name);
     uint nameLength = nameInBytes.length;
     require(companies[msg.sender].minWeightRequirement == 0, "Sorry you can't register twice edit your info if you wish to");
     require(nameLength!=0, "Please enter a company name");
     require(_maxPricePerKg > 0, "bidding price must be greater than zero");
     require(_minWeightRequirement > 0,"Invalid minimum weight requirement");
-
-    Company newCompany = Company(_name,_minWeightRequirement,_maxPricePerKg,_active);
+    Company memory newCompany = Company(_name,_minWeightRequirement,_maxPricePerKg,_active);
     companies[msg.sender] = newCompany;
-    emit registeredCompanyLogs(msg.sender, name, minWeightRequirement, maxPricePerKg, active); 
+    emit registeredCompanyLogs(msg.sender, _name, _minWeightRequirement, _maxPricePerKg, _active); 
     return true; 
     }
 
