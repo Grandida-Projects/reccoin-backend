@@ -163,17 +163,36 @@ contract Recycle is Ownable {
         // Implement your code here
     }
 
+    
+    /**
+     * @dev This event is emitted when a picker is successfully registered on the RecCoin platform.
+     */
+
+    event PickerRegistered(address indexed pickerAddress, string name, string email);
+
+
     /**
      * @dev Registers a new picker.
      * @param _name The name of the picker.
      * @param _email The email address of the picker.
      * @return success A boolean indicating if the registration was successful.
      */
+
+
     function registerPicker(
         string memory _name,
         string memory _email
     ) public returns (bool success) {
-        // Implement your code here
+    require(bytes(_name).length > 0, "Please provide a valid picker name.");
+    require(bytes(_email).length > 0, "Please provide a valid email address.");
+    require(bytes(pickers[msg.sender].name).length == 0, "Picker already registered");
+
+    pickers[msg.sender].name = _name;
+    pickerAdresses.push(msg.sender);
+
+    emit PickerRegistered(msg.sender, _name, _email);
+    
+    return true;
     }
 
     /**
