@@ -26,6 +26,11 @@ contract Recycle is Ownable {
     mapping(address => Picker) public pickers;
     uint256 public totalTransactions;
     mapping(uint256 => Transaction) public transactions;
+    event registeredCompanyLogs(
+        address companyAddress, string name,
+        uint256 minWeightRequirement,
+        uint256 maxPricePerKg,
+        bool active );
     enum PlasticType {
         PET,
         HDPE,
@@ -121,13 +126,16 @@ contract Recycle is Ownable {
         uint256 _maxPricePerKg,
         bool _active
     ) public returns (bool success) {
-    bytes memory strBytes = bytes(name);
-    uint length = strBytes.length;
-    require(length!=0, "Please enter a company name");
-    require(_maxPricePerKg!=0, "Can't have zero as your bidding price");
-    require(_minWeightRequirement!=0,"Invalid minimum weight requirement");
+    bytes memory nameInBytes = bytes(name);
+    uint nameLength = nameInBytes.length;
+    require(companies[msg.sender].minWeightRequirement == 0, "Sorry you can't register twice edit your info if you wish to");
+    require(nameLength!=0, "Please enter a company name");
+    require(_maxPricePerKg > 0, "bidding price must be greater than zero");
+    require(_minWeightRequirement > 0,"Invalid minimum weight requirement");
+
     Company newCompany = Company(_name,_minWeightRequirement,_maxPricePerKg,_active);
-    companies[msg.sender] = newCompany; 
+    companies[msg.sender] = newCompany;
+    emit registeredCompanyLogs(msg.sender, name, minWeightRequirement, maxPricePerKg, active); 
     return true; 
     }
 
