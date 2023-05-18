@@ -95,6 +95,74 @@ describe("RecCoin", function () {
     });
   });
 
+  // The following are tests on the transferFrom function of the RecCoin smart contract - line 87 of RecCoin.sol
+   describe("transferFrom", function () {
+    it("Should transfer tokens from sender to recipient", async function () {
+      const sender = owner.address;
+      const recipient = account2.address;
+      const amount = ethers.utils.parseEther("50");
+
+      // Check initial balances
+      const initialSenderBalance = await recCoin.balanceOf(sender);
+      const initialRecipientBalance = await recCoin.balanceOf(recipient);
+
+      // Set the allowance for account1 to spend tokens from owner's address using the approve function
+      await recCoin.connect(owner).approve(account1.address, amount);
+
+      // Perform transferFrom
+      await recCoin.connect(account1).transferFrom(sender, recipient, amount);
+
+      // Check final balances
+      const finalSenderBalance = await recCoin.balanceOf(sender);
+      const finalRecipientBalance = await recCoin.balanceOf(recipient);
+
+      // Check if balances have updated correctly
+      expect(finalSenderBalance).to.equal(initialSenderBalance.sub(amount));
+      expect(finalRecipientBalance).to.equal(initialRecipientBalance.add(amount));
+
+      console.log(Number(ethers.utils.formatEther(amount)) + " RecCoin transferred from " + owner.address + " to " + account2.address);
+      console.log("Owner balance now: " + Number(ethers.utils.formatEther(finalSenderBalance)));
+      console.log(`-----------------------------------------------`)
+
+    });
+
+    it("Should update allowance after transferFrom", async function () {
+      const sender = owner.address;
+      const recipient = account2.address;
+      const amount = ethers.utils.parseEther("50");
+
+       // Set the allowance for account1 to spend tokens from owner's address using the approve function
+       await recCoin.connect(owner).approve(account1.address, amount);
+
+
+      // Check initial allowance
+      const initialAllowance = await recCoin.allowance(sender, account1.address);
+
+    
+      // Perform transferFrom
+      await recCoin.connect(account1).transferFrom(sender, recipient, amount);
+
+      // Check updated allowance
+      const updatedAllowance = await recCoin.allowance(sender, account1.address);
+
+      // Check if allowance has updated correctly
+      expect(updatedAllowance).to.equal(initialAllowance.sub(amount));
+
+      console.log(Number(ethers.utils.formatEther(initialAllowance)) + " Is initial allowance " + Number(ethers.utils.formatEther(updatedAllowance))  + " is updated allowance ");
+    });
+
+    it("Should revert transferFrom if allowance is exceeded", async function () {
+      const sender = owner.address;
+      const recipient = account2.address;
+      const amount = ethers.utils.parseEther("150");
+
+      // Perform transferFrom and expect it to revert
+      await expect(recCoin.connect(account1).transferFrom(sender, recipient, amount)).to.be.revertedWith(
+        "RecCoin: transfer amount exceeds allowance"
+      );
+    });
+  });
+
   // This tests the burn function of the RecCoin smart contract - line 114 of RecCoin.sol
   describe("burn", function () {
     it("Burns a specifies number of token and removes it from total supply", async function () {
