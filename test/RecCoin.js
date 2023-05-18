@@ -165,7 +165,7 @@ describe("RecCoin", function () {
 
   // This tests the burn function of the RecCoin smart contract - line 114 of RecCoin.sol
   describe("burn", function () {
-    it("Burns a specifies number of token and removes it from total supply", async function () {
+    it("Burns a specified number of tokens and removes it from total supply", async function () {
 
       const amountToBurn = ethers.utils.parseEther("80");
 
