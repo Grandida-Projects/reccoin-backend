@@ -11,9 +11,12 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "chai": "^4.3.7",
     "dotenv": "^16.0.3",
+    "ethers": "^5.7.2",
     "hardhat": "^2.14.0",
-    "hardhat-deploy": ""
+    "hardhat-deploy": "",
+    "mocha": "^10.2.0"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.8.3"
