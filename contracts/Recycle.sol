@@ -152,6 +152,11 @@ contract Recycle is Ownable {
 
     event CompanyEdited(address indexed companyAddress, string name, uint256 minWeightRequirement,
           uint256 maxPricePerKg, bool active);
+
+    modifier onlyCompany() {
+        require(companies[msg.sender].active, "Only active companies can perform this action");
+        _;
+    }
           
      /* @dev Edits an existing company.
      * @param _name The new name of the company.
@@ -166,7 +171,7 @@ contract Recycle is Ownable {
         uint256 _maxPricePerKg,
         bool _active
     ) public returns (bool success) {
-        Company storage company = companies[msg.sender];
+        Company memory company = companies[msg.sender];
         company.name = _name;
         company.minWeightRequirement = _minWeightRequirement;
         company.maxPricePerKg = _maxPricePerKg;
@@ -280,8 +285,4 @@ contract Recycle is Ownable {
         // Implement your code here
     }
 
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> fd41c1f07d9f46f366a55729aa067d41ecadd798
