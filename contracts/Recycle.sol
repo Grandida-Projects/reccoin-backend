@@ -285,4 +285,7 @@ contract Recycle is Ownable {
         // Implement your code here
     }
 
+<<<<<<<<< Temporary merge branch 1
+}
+=========
 }
