@@ -162,7 +162,35 @@ describe("RecCoin", function () {
       );
     });
   });
-
+    // This tests the mint function of the Recoin smart contract - line 98 of Recoin.sol
+    describe("mint", function () {
+      it("should mint tokens to the specified account", async function () {
+       const amount = 100;
+  
+       // Mint tokens to the specified account
+       await recCoin.connect(owner).mint(account1.address, amount);
+  
+       // check balance of the specified account
+       const balance = await recCoin.balanceOf(account1.address);
+  
+       // Check the total supply of tokens in the contract
+       const totalSupply = await recCoin.totalSupply();
+  
+       // Verify that the balance of the specified account is equal to the minted amount
+       expect(balance).to.equal(amount);
+  
+       // Verify that the total supply has increased by the minted amount
+       expect(totalSupply).to.equal(1000000000000000000100n);
+      });
+  
+       it("should revert if minting to the zero address", async function () {
+       const amount = 100;
+  
+       // Expect the minting to the zero address to revert with an error message
+       await expect(recCoin.connect(owner).mint("0x0000000000000000000000000000000000000000", amount))
+        .to.be.revertedWith("RecCoin: mint to the zero address");
+      }); 
+  });
   // This tests the burn function of the RecCoin smart contract - line 114 of RecCoin.sol
   describe("burn", function () {
     it("Burns a specified number of tokens and removes it from total supply", async function () {

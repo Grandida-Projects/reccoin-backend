@@ -31,6 +31,8 @@ contract Recycle is Ownable {
         uint256 minWeightRequirement,
         uint256 maxPricePerKg,
         bool active );
+    event PlasticValidated(address indexed companyAddress, uint256 transactionId, 
+    bool isApproved);
     enum PlasticType {
         PET,
         HDPE,
@@ -126,16 +128,15 @@ contract Recycle is Ownable {
         uint256 _maxPricePerKg,
         bool _active
     ) public returns (bool success) {
-    bytes memory nameInBytes = bytes(name);
+    bytes memory nameInBytes = bytes(_name);
     uint nameLength = nameInBytes.length;
     require(companies[msg.sender].minWeightRequirement == 0, "Sorry you can't register twice edit your info if you wish to");
     require(nameLength!=0, "Please enter a company name");
     require(_maxPricePerKg > 0, "bidding price must be greater than zero");
     require(_minWeightRequirement > 0,"Invalid minimum weight requirement");
-
-    Company newCompany = Company(_name,_minWeightRequirement,_maxPricePerKg,_active);
+    Company memory newCompany = Company(_name,_minWeightRequirement,_maxPricePerKg,_active);
     companies[msg.sender] = newCompany;
-    emit registeredCompanyLogs(msg.sender, name, minWeightRequirement, maxPricePerKg, active); 
+    emit registeredCompanyLogs(msg.sender, _name, _minWeightRequirement, _maxPricePerKg, _active); 
     return true; 
     }
 
@@ -147,8 +148,17 @@ contract Recycle is Ownable {
         return companyAdresses.length;
     }
 
-    /**
-     * @dev Edits an existing company.
+
+
+    event CompanyEdited(address indexed companyAddress, string name, uint256 minWeightRequirement,
+          uint256 maxPricePerKg, bool active);
+
+    modifier onlyCompany() {
+        require(companies[msg.sender].active, "Only active companies can perform this action");
+        _;
+    }
+          
+     /* @dev Edits an existing company.
      * @param _name The new name of the company.
      * @param _minWeightRequirement The new minimum weight requirement for the company.
      * @param _maxPricePerKg The new maximum price per kilogram set by the company.
@@ -161,8 +171,31 @@ contract Recycle is Ownable {
         uint256 _maxPricePerKg,
         bool _active
     ) public returns (bool success) {
-        // Implement your code here
+        Company memory company = companies[msg.sender];
+        company.name = _name;
+        company.minWeightRequirement = _minWeightRequirement;
+        company.maxPricePerKg = _maxPricePerKg;
+        company.active = _active;
+
+        emit CompanyEdited(
+            msg.sender,
+            _name,
+            _minWeightRequirement,
+            _maxPricePerKg,
+            _active
+        );
+
+        return true;
+        
     }
+
+    
+    /**
+     * @dev This event is emitted when a picker is successfully registered on the RecCoin platform.
+     */
+
+    event PickerRegistered(address indexed pickerAddress, string name, string email);
+
 
     /**
      * @dev Registers a new picker.
@@ -170,11 +203,22 @@ contract Recycle is Ownable {
      * @param _email The email address of the picker.
      * @return success A boolean indicating if the registration was successful.
      */
+
+
     function registerPicker(
         string memory _name,
         string memory _email
     ) public returns (bool success) {
-        // Implement your code here
+    require(bytes(_name).length > 0, "Please provide a valid picker name.");
+    require(bytes(_email).length > 0, "Please provide a valid email address.");
+    require(bytes(pickers[msg.sender].name).length == 0, "Picker already registered");
+
+    pickers[msg.sender].name = _name;
+    pickerAdresses.push(msg.sender);
+
+    emit PickerRegistered(msg.sender, _name, _email);
+    
+    return true;
     }
 
     /**
@@ -221,8 +265,16 @@ contract Recycle is Ownable {
         uint256 _transactionId,
         bool _isApproved
     ) public returns (bool success) {
-        // Implement your code here
-    }
+        require(transactions[_transactionId].weight >= companies[msg.sender].minWeightRequirement, "Weight of plastic deposited is below the minimum accepted weight of the company");
+        if (_isApproved == true){
+            transactions[_transactionId].isApproved=true;
+            transactions[_transactionId].id=_transactionId;
+            return true;
+        }
+        emit PlasticValidated(transactions[_transactionId].companyAddress, _transactionId, _isApproved);
+        
+        }
+    
 
     /**
      * @dev Pays a picker for a completed transaction.
