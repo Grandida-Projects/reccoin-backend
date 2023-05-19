@@ -32,19 +32,6 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
     uint8 public decimals;  // The number of decimals for token display
     uint256 public totalSupply;  // The total supply of the token
 
-    struct Picker {
-        string name;
-        uint weightDeposited;
-        string email;
-    }
-
-    mapping(address => Picker) public pickers;
-    event PickerEdited(
-        address indexed pickerAddress,
-        string name,
-        string email
-    );
-
     mapping (address => uint256) public balanceOf;  // Mapping to track the balanceOf of token holders
     mapping (address => mapping (address => uint256)) public allowance;  // Mapping to track the allowances granted by token holders
 
@@ -173,18 +160,5 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
         totalSupply = totalSupply.sub(amount);
         emit Transfer(account, address(0), amount);
     }
-    
-     function editPicker(
-        string memory _name,
-        string memory _email
-    ) public returns (bool success) {
-        Picker storage existingPicker = pickers[msg.sender];
-        existingPicker.name = _name;
-        existingPicker.email = _email;
-
-        emit PickerEdited(msg.sender, _name, _email);
-        return true;
-    }
-
 }
 
