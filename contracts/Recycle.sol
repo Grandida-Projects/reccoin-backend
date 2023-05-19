@@ -284,8 +284,4 @@ contract Recycle is Ownable {
     function payPicker(uint256 _transactionId) public returns (bool success) {
         // Implement your code here
     }
-
-<<<<<<<<< Temporary merge branch 1
-}
-=========
 }
