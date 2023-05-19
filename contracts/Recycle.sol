@@ -31,6 +31,8 @@ contract Recycle is Ownable {
         uint256 minWeightRequirement,
         uint256 maxPricePerKg,
         bool active );
+    event PlasticValidated(address indexed companyAddress, uint256 transactionId, 
+    bool isApproved);
     enum PlasticType {
         PET,
         HDPE,
@@ -258,8 +260,16 @@ contract Recycle is Ownable {
         uint256 _transactionId,
         bool _isApproved
     ) public returns (bool success) {
-        // Implement your code here
-    }
+        require(transactions[_transactionId].weight >= companies[msg.sender].minWeightRequirement, "Weight of plastic deposited is below the minimum accepted weight of the company");
+        if (_isApproved == true){
+            transactions[_transactionId].isApproved=true;
+            transactions[_transactionId].id=_transactionId;
+            return true;
+        }
+        emit PlasticValidated(transactions[_transactionId].companyAddress, _transactionId, _isApproved);
+        
+        }
+    
 
     /**
      * @dev Pays a picker for a completed transaction.
@@ -270,4 +280,8 @@ contract Recycle is Ownable {
         // Implement your code here
     }
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> fd41c1f07d9f46f366a55729aa067d41ecadd798
