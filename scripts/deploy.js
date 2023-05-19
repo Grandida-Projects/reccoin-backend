@@ -4,29 +4,39 @@
 // You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
-const hre = require("hardhat");
+
+// Deploy script for RecCoin smart contract on Hardhat
+
+// Import Hardhat environment and Ethereum libraries
+const { ethers } = require("hardhat");
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  // Set up Ethereum wallet
+  const [deployer] = await ethers.getSigners();
 
-  const lockedAmount = hre.ethers.utils.parseEther("0.001");
+  // Grab RecCoin.sol
+  console.log("Deploying the RecCoin contract with the account:", deployer.address);
+  // Set up the RecCoin contract factory
+  const RecCoin = await ethers.getContractFactory("RecCoin");
+  // Deploy the RecCoin contract
+  const recCoin = await RecCoin.deploy("RecCoin", "REC", 0, ethers.utils.parseEther("1000"));
+  // display success and address
+  console.log("RecCoin contract deployed to address:", recCoin.address);
 
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
-
-  await lock.deployed();
-
-  console.log(
-    `Lock with ${ethers.utils.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
-  );
+ /* 
+  // Grab Recycle.sol
+  console.log("Deploying contracts with the account:", deployer.address);  
+  // Set up the Recycle contract factory
+  const Recycle = await ethers.getContractFactory("Recycle");  
+  // Deploy the Recycle contract
+  const recycle = await Recycle.deploy();  
+  console.log("Recycle contract deployed to address:", recycle.address);
+  */
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
+
+// Run the main function
+main().then(() => process.exit(0)).catch(error => {
   console.error(error);
-  process.exitCode = 1;
+  process.exit(1);
 });
