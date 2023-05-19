@@ -148,12 +148,8 @@ contract Recycle is Ownable {
         return companyAdresses.length;
     }
 
-
-
-    event CompanyEdited(address indexed companyAddress, string name, uint256 minWeightRequirement,
-          uint256 maxPricePerKg, bool active);
-          
-     /* @dev Edits an existing company.
+    /**
+     * @dev Edits an existing company.
      * @param _name The new name of the company.
      * @param _minWeightRequirement The new minimum weight requirement for the company.
      * @param _maxPricePerKg The new maximum price per kilogram set by the company.
@@ -166,22 +162,7 @@ contract Recycle is Ownable {
         uint256 _maxPricePerKg,
         bool _active
     ) public returns (bool success) {
-        Company storage company = companies[msg.sender];
-        company.name = _name;
-        company.minWeightRequirement = _minWeightRequirement;
-        company.maxPricePerKg = _maxPricePerKg;
-        company.active = _active;
-
-        emit CompanyEdited(
-            msg.sender,
-            _name,
-            _minWeightRequirement,
-            _maxPricePerKg,
-            _active
-        );
-
-        return true;
-        
+        // Implement your code here
     }
 
     
@@ -279,4 +260,5 @@ contract Recycle is Ownable {
     function payPicker(uint256 _transactionId) public returns (bool success) {
         // Implement your code here
     }
+
 }
