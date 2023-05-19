@@ -9,7 +9,7 @@ describe("RecCoin", function () {
   let account1;
   let account2;
   let accountss;
-  // assumme base denomination of the RecCoin token is handled using ethers.utils.parseEther
+  // assume base denomination of the RecCoin token is handled using ethers.utils.parseEther
   let _decimals = 0;
 
   const initialSupply = ethers.utils.parseEther("1000");
