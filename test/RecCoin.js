@@ -27,7 +27,7 @@ describe("RecCoin", function () {
   });
 
   // Test to ascertain that the owner is rightly set
-  describe("Deployment", function () {
+  describe("deployment", function () {
     it("Should set the right owner", async function () {
       expect(await recCoin.owner()).to.equal(owner.address);
       console.log("Owner set correctly as " + owner.address);
@@ -55,8 +55,8 @@ describe("RecCoin", function () {
     });
   });
 
-  // The following are tests on the transfer function of the RecCoin smart contract - line 63 of RecCoin.sol
-  describe("Transfers", function () {
+  // The following are tests on the transfer function of the RecCoin smart contract - line 62 of RecCoin.sol
+  describe("transfer", function () {
     it("Should transfer tokens from sender to account1 and account2", async function () {
       const initialBalanceOwner = await recCoin.balanceOf(owner.address);
       const initialBalanceAccount1 = await recCoin.balanceOf(account1.address);
@@ -94,6 +94,27 @@ describe("RecCoin", function () {
       console.log("New balance of account2 with address: " + account2.address + " is " + Number(ethers.utils.formatEther(newBalanceAccount2)));
     });
   });
+
+  
+  // The following are tests on the approve function of the RecCoin smart contract - line 74 of RecCoin.sol
+  describe("approve", function () {
+    it("should approve token transfer", async function () {
+      const amountToApprove = 80;
+      const spender = account1.address;
+      const initialAllowance = await recCoin.allowance(owner.address, spender);
+  
+      // owner approves token transfer
+      await recCoin.connect(owner).approve(spender, amountToApprove);
+  
+      // Verify the allowance so granted
+      const newAllowance = await recCoin.allowance(owner.address, spender);
+      console.log("Initial approved spending:", initialAllowance.toString());
+      console.log("New approved spending:", newAllowance.toString());
+  
+      expect(newAllowance).to.equal(initialAllowance.add(amountToApprove));
+    });
+  });
+
 
   // The following are tests on the transferFrom function of the RecCoin smart contract - line 87 of RecCoin.sol
    describe("transferFrom", function () {

@@ -23,7 +23,7 @@ async function main() {
   // display success and address
   console.log("RecCoin contract deployed to address:", recCoin.address);
 
- /* 
+ 
   // Grab Recycle.sol
   console.log("Deploying contracts with the account:", deployer.address);  
   // Set up the Recycle contract factory
@@ -31,7 +31,7 @@ async function main() {
   // Deploy the Recycle contract
   const recycle = await Recycle.deploy();  
   console.log("Recycle contract deployed to address:", recycle.address);
-  */
+  
 }
 
 
