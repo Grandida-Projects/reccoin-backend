@@ -27,12 +27,17 @@ contract Recycle is Ownable {
     uint256 public totalTransactions;
     mapping(uint256 => Transaction) public transactions;
     event registeredCompanyLogs(
-        address companyAddress, string name,
+        address companyAddress,
+        string name,
         uint256 minWeightRequirement,
         uint256 maxPricePerKg,
-        bool active );
-    event PlasticValidated(address indexed companyAddress, uint256 transactionId, 
-    bool isApproved);
+        bool active
+    );
+    event PlasticValidated(
+        address indexed companyAddress,
+        uint256 transactionId,
+        bool isApproved
+    );
     enum PlasticType {
         PET,
         HDPE,
@@ -42,6 +47,11 @@ contract Recycle is Ownable {
         PS,
         Other
     }
+    event PickerEdited(
+        address indexed pickerAddress,
+        string name,
+        string email
+    );
 
     struct Company {
         string name;
@@ -52,7 +62,8 @@ contract Recycle is Ownable {
 
     struct Picker {
         string name;
-        uint weightDeposited;
+        uint256 weightDeposited;
+        string email;
     }
 
     struct Transaction {
@@ -128,37 +139,60 @@ contract Recycle is Ownable {
         uint256 _maxPricePerKg,
         bool _active
     ) public returns (bool success) {
-    bytes memory nameInBytes = bytes(_name);
-    uint nameLength = nameInBytes.length;
-    require(companies[msg.sender].minWeightRequirement == 0, "Sorry you can't register twice edit your info if you wish to");
-    require(nameLength!=0, "Please enter a company name");
-    require(_maxPricePerKg > 0, "bidding price must be greater than zero");
-    require(_minWeightRequirement > 0,"Invalid minimum weight requirement");
-    Company memory newCompany = Company(_name,_minWeightRequirement,_maxPricePerKg,_active);
-    companies[msg.sender] = newCompany;
-    emit registeredCompanyLogs(msg.sender, _name, _minWeightRequirement, _maxPricePerKg, _active); 
-    return true; 
+        bytes memory nameInBytes = bytes(_name);
+        uint256 nameLength = nameInBytes.length;
+        require(
+            companies[msg.sender].minWeightRequirement == 0,
+            "Sorry you can't register twice edit your info if you wish to"
+        );
+        require(nameLength != 0, "Please enter a company name");
+        require(_maxPricePerKg > 0, "bidding price must be greater than zero");
+        require(
+            _minWeightRequirement > 0,
+            "Invalid minimum weight requirement"
+        );
+        Company memory newCompany = Company(
+            _name,
+            _minWeightRequirement,
+            _maxPricePerKg,
+            _active
+        );
+        companies[msg.sender] = newCompany;
+        emit registeredCompanyLogs(
+            msg.sender,
+            _name,
+            _minWeightRequirement,
+            _maxPricePerKg,
+            _active
+        );
+        return true;
     }
 
     /**
      * @dev Gets the count of registered companies.
      * @return count The count of registered companies.
      */
-    function getRegisteredCompanyCount() public view returns (uint count) {
+    function getRegisteredCompanyCount() public view returns (uint256 count) {
         return companyAdresses.length;
     }
 
+    event CompanyEdited(
+        address indexed companyAddress,
+        string name,
+        uint256 minWeightRequirement,
+        uint256 maxPricePerKg,
+        bool active
+    );
 
-
-    event CompanyEdited(address indexed companyAddress, string name, uint256 minWeightRequirement,
-          uint256 maxPricePerKg, bool active);
-
-    modifier onlyCompany() {
-        require(companies[msg.sender].active, "Only active companies can perform this action");
+    modifier onlyActiveCompany() {
+        require(
+            companies[msg.sender].active,
+            "Only active companies can perform this action"
+        );
         _;
     }
-          
-     /* @dev Edits an existing company.
+
+    /* @dev Edits an existing company.
      * @param _name The new name of the company.
      * @param _minWeightRequirement The new minimum weight requirement for the company.
      * @param _maxPricePerKg The new maximum price per kilogram set by the company.
@@ -186,16 +220,17 @@ contract Recycle is Ownable {
         );
 
         return true;
-        
     }
 
-    
     /**
      * @dev This event is emitted when a picker is successfully registered on the RecCoin platform.
      */
 
-    event PickerRegistered(address indexed pickerAddress, string name, string email);
-
+    event PickerRegistered(
+        address indexed pickerAddress,
+        string name,
+        string email
+    );
 
     /**
      * @dev Registers a new picker.
@@ -204,21 +239,26 @@ contract Recycle is Ownable {
      * @return success A boolean indicating if the registration was successful.
      */
 
+    function registerPicker(string memory _name, string memory _email)
+        public
+        returns (bool success)
+    {
+        require(bytes(_name).length > 0, "Please provide a valid picker name.");
+        require(
+            bytes(_email).length > 0,
+            "Please provide a valid email address."
+        );
+        require(
+            bytes(pickers[msg.sender].name).length == 0,
+            "Picker already registered"
+        );
 
-    function registerPicker(
-        string memory _name,
-        string memory _email
-    ) public returns (bool success) {
-    require(bytes(_name).length > 0, "Please provide a valid picker name.");
-    require(bytes(_email).length > 0, "Please provide a valid email address.");
-    require(bytes(pickers[msg.sender].name).length == 0, "Picker already registered");
+        pickers[msg.sender].name = _name;
+        pickerAdresses.push(msg.sender);
 
-    pickers[msg.sender].name = _name;
-    pickerAdresses.push(msg.sender);
+        emit PickerRegistered(msg.sender, _name, _email);
 
-    emit PickerRegistered(msg.sender, _name, _email);
-    
-    return true;
+        return true;
     }
 
     /**
@@ -235,11 +275,22 @@ contract Recycle is Ownable {
      * @param _email The new email address of the picker.
      * @return success A boolean indicating if the edit was successful.
      */
-    function editPicker(
-        string memory _name,
-        string memory _email
-    ) public returns (bool success) {
-        // Implement your code here
+    function editPicker(string memory _name, string memory _email)
+        public
+        returns (bool success)
+    {
+        require(bytes(_name).length > 0, "Please provide a valid picker name.");
+        require(
+            bytes(_email).length > 0,
+            "Please provide a valid email address."
+        );
+
+        Picker storage existingPicker = pickers[msg.sender];
+        existingPicker.name = _name;
+        existingPicker.email = _email;
+
+        emit PickerEdited(msg.sender, _name, _email);
+        return true;
     }
 
     /**
@@ -248,10 +299,10 @@ contract Recycle is Ownable {
      * @param _weight The weight of the deposited plastic.
      * @return transactionId The ID of the transaction.
      */
-    function depositPlastic(
-        address _companyAddress,
-        uint256 _weight
-    ) public returns (uint256 transactionId) {
+    function depositPlastic(address _companyAddress, uint256 _weight)
+        public
+        returns (uint256 transactionId)
+    {
         // Implement your code here
     }
 
@@ -261,20 +312,26 @@ contract Recycle is Ownable {
      * @param _isApproved A boolean indicating if the transaction is approved.
      * @return success A boolean indicating if the validation was successful.
      */
-    function validatePlastic(
-        uint256 _transactionId,
-        bool _isApproved
-    ) public returns (bool success) {
-        require(transactions[_transactionId].weight >= companies[msg.sender].minWeightRequirement, "Weight of plastic deposited is below the minimum accepted weight of the company");
-        if (_isApproved == true){
-            transactions[_transactionId].isApproved=true;
-            transactions[_transactionId].id=_transactionId;
+    function validatePlastic(uint256 _transactionId, bool _isApproved)
+        public
+        returns (bool success)
+    {
+        require(
+            transactions[_transactionId].weight >=
+                companies[msg.sender].minWeightRequirement,
+            "Weight of plastic deposited is below the minimum accepted weight of the company"
+        );
+        if (_isApproved == true) {
+            transactions[_transactionId].isApproved = true;
+            transactions[_transactionId].id = _transactionId;
             return true;
         }
-        emit PlasticValidated(transactions[_transactionId].companyAddress, _transactionId, _isApproved);
-        
-        }
-    
+        emit PlasticValidated(
+            transactions[_transactionId].companyAddress,
+            _transactionId,
+            _isApproved
+        );
+    }
 
     /**
      * @dev Pays a picker for a completed transaction.
