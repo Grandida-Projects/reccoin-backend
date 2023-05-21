@@ -200,12 +200,22 @@ contract Recycle is Ownable {
      * @param _active The new activity status of the company.
      * @return success A boolean indicating if the edit was successful.
      */
+    // TODO: Upgrade function to allow more granular edits
     function editCompany(
         string memory _name,
         uint256 _minWeightRequirement,
         uint256 _maxPricePerKg,
         bool _active
-    ) public returns (bool success) {
+    ) public onlyCompany returns (bool success) {
+        bytes memory nameInBytes = bytes(_name);
+        uint256 nameLength = nameInBytes.length;
+        require(nameLength != 0, "Please enter a company name");
+        require(_maxPricePerKg > 0, "set price must be greater than zero");
+        require(
+            _minWeightRequirement > 0,
+            "Invalid minimum weight requirement"
+        );
+
         Company memory company = companies[msg.sender];
         company.name = _name;
         company.minWeightRequirement = _minWeightRequirement;
