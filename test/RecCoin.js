@@ -183,35 +183,46 @@ describe("RecCoin", function () {
       );
     });
   });
-    // This tests the mint function of the Recoin smart contract - line 98 of Recoin.sol
-    describe("mint", function () {
-      it("should mint tokens to the specified account", async function () {
-       const amount = 100;
+
+
+  // This tests the mint function of the Recoin smart contract - line 98 of Recoin.sol
+  describe("mint", function () {
+    it("should mint tokens to the specified account", async function () {
+      const amount = ethers.utils.parseEther("100");
   
-       // Mint tokens to the specified account
-       await recCoin.connect(owner).mint(account1.address, amount);
+      // Mint tokens to the specified account
+      await recCoin.connect(owner).mint(account1.address, amount);
+      console.log("Tokens minted to account1: ", Number(ethers.utils.formatEther(amount)));
   
-       // check balance of the specified account
-       const balance = await recCoin.balanceOf(account1.address);
+      // Check the balance of the specified account
+      const balance = await recCoin.balanceOf(account1.address);
+      console.log("Balance of account1: ", Number(ethers.utils.formatEther(balance)));
   
-       // Check the total supply of tokens in the contract
-       const totalSupply = await recCoin.totalSupply();
+      // Check the total supply of tokens in the contract
+      const totalSupply = await recCoin.totalSupply();
+      console.log("Total supply of tokens: ", Number(ethers.utils.formatEther(totalSupply)));
   
-       // Verify that the balance of the specified account is equal to the minted amount
-       expect(balance).to.equal(amount);
+      // Verify that the balance of the specified account is equal to the minted amount
+      expect(balance).to.equal(amount);
   
-       // Verify that the total supply has increased by the minted amount
-       expect(totalSupply).to.equal(1000000000000000000100n);
-      });
+      // Verify that the total supply has increased by the minted amount
+      const expectedTotalSupply = initialSupply.add(amount);
+      expect(totalSupply).to.equal(expectedTotalSupply);
+      console.log("Expected total supply after recent mint: ", Number(ethers.utils.formatEther(expectedTotalSupply)));
+    });
   
-       it("should revert if minting to the zero address", async function () {
-       const amount = 100;
+    it("should revert if minting to the zero address", async function () {
+      const amount = 100;
   
-       // Expect the minting to the zero address to revert with an error message
-       await expect(recCoin.connect(owner).mint("0x0000000000000000000000000000000000000000", amount))
+      // Expect the minting to the zero address to revert with an error message
+      await expect(recCoin.connect(owner).mint("0x0000000000000000000000000000000000000000", amount))
         .to.be.revertedWith("RecCoin: mint to the zero address");
-      }); 
+      console.log("Minting to zero address reverted.");
+    });
   });
+  
+
+
   // This tests the burn function of the RecCoin smart contract - line 114 of RecCoin.sol
   describe("burn", function () {
     it("Burns a specified number of tokens and removes it from total supply", async function () {
