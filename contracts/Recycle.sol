@@ -26,8 +26,8 @@ contract Recycle is Ownable {
     mapping(address => Picker) public pickers;
     uint256 public totalTransactions;
     mapping(uint256 => Transaction) public transactions;
-    event registeredCompanyLogs(
-        address companyAddress,
+    event CompanyRegistered(
+        address indexed companyAddress,
         string name,
         uint256 minWeightRequirement,
         uint256 maxPricePerKg,
@@ -146,7 +146,7 @@ contract Recycle is Ownable {
             "Sorry you can't register twice edit your info if you wish to"
         );
         require(nameLength != 0, "Please enter a company name");
-        require(_maxPricePerKg > 0, "bidding price must be greater than zero");
+        require(_maxPricePerKg > 0, "set price must be greater than zero");
         require(
             _minWeightRequirement > 0,
             "Invalid minimum weight requirement"
@@ -158,7 +158,8 @@ contract Recycle is Ownable {
             _active
         );
         companies[msg.sender] = newCompany;
-        emit registeredCompanyLogs(
+        companyAddresses.push(msg.sender);
+        emit CompanyRegistered(
             msg.sender,
             _name,
             _minWeightRequirement,
@@ -239,10 +240,10 @@ contract Recycle is Ownable {
      * @return success A boolean indicating if the registration was successful.
      */
 
-    function registerPicker(string memory _name, string memory _email)
-        public
-        returns (bool success)
-    {
+    function registerPicker(
+        string memory _name,
+        string memory _email
+    ) public returns (bool success) {
         require(bytes(_name).length > 0, "Please provide a valid picker name.");
         require(
             bytes(_email).length > 0,
@@ -275,10 +276,10 @@ contract Recycle is Ownable {
      * @param _email The new email address of the picker.
      * @return success A boolean indicating if the edit was successful.
      */
-    function editPicker(string memory _name, string memory _email)
-        public
-        returns (bool success)
-    {
+    function editPicker(
+        string memory _name,
+        string memory _email
+    ) public returns (bool success) {
         require(bytes(_name).length > 0, "Please provide a valid picker name.");
         require(
             bytes(_email).length > 0,
@@ -299,10 +300,10 @@ contract Recycle is Ownable {
      * @param _weight The weight of the deposited plastic.
      * @return transactionId The ID of the transaction.
      */
-    function depositPlastic(address _companyAddress, uint256 _weight)
-        public
-        returns (uint256 transactionId)
-    {
+    function depositPlastic(
+        address _companyAddress,
+        uint256 _weight
+    ) public returns (uint256 transactionId) {
         // Implement your code here
     }
 
@@ -312,10 +313,10 @@ contract Recycle is Ownable {
      * @param _isApproved A boolean indicating if the transaction is approved.
      * @return success A boolean indicating if the validation was successful.
      */
-    function validatePlastic(uint256 _transactionId, bool _isApproved)
-        public
-        returns (bool success)
-    {
+    function validatePlastic(
+        uint256 _transactionId,
+        bool _isApproved
+    ) public returns (bool success) {
         require(
             transactions[_transactionId].weight >=
                 companies[msg.sender].minWeightRequirement,
