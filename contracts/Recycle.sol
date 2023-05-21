@@ -20,8 +20,8 @@ contract Recycle is Ownable {
     using SafeMath for uint256;
     using Address for address;
 
-    address[] public companyAdresses;
-    address[] public pickerAdresses;
+    address[] public companyAddresses;
+    address[] public pickerAddresses;
     mapping(address => Company) public companies;
     mapping(address => Picker) public pickers;
     uint256 public totalTransactions;
@@ -173,7 +173,7 @@ contract Recycle is Ownable {
      * @return count The count of registered companies.
      */
     function getRegisteredCompanyCount() public view returns (uint256 count) {
-        return companyAdresses.length;
+        return companyAddresses.length;
     }
 
     event CompanyEdited(
@@ -254,7 +254,7 @@ contract Recycle is Ownable {
         );
 
         pickers[msg.sender].name = _name;
-        pickerAdresses.push(msg.sender);
+        pickerAddresses.push(msg.sender);
 
         emit PickerRegistered(msg.sender, _name, _email);
 
@@ -266,7 +266,7 @@ contract Recycle is Ownable {
      * @return count The count of registered pickers.
      */
     function getRegisteredPickerCount() public view returns (uint256 count) {
-        return pickerAdresses.length;
+        return pickerAddresses.length;
     }
 
     /**
