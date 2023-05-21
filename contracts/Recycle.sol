@@ -216,7 +216,7 @@ contract Recycle is Ownable {
             "Invalid minimum weight requirement"
         );
 
-        Company memory company = companies[msg.sender];
+        Company storage company = companies[msg.sender];
         company.name = _name;
         company.minWeightRequirement = _minWeightRequirement;
         company.maxPricePerKg = _maxPricePerKg;
@@ -289,7 +289,7 @@ contract Recycle is Ownable {
     function editPicker(
         string memory _name,
         string memory _email
-    ) public returns (bool success) {
+    ) public onlyPicker returns (bool success) {
         require(bytes(_name).length > 0, "Please provide a valid picker name.");
         require(
             bytes(_email).length > 0,
