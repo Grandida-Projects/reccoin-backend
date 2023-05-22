@@ -244,6 +244,52 @@ contract Recycle is Ownable {
     }
 
     /**
+     * @dev Updates the name of the company for the calling address.
+     * @param _name The new name to be set for the company.
+     */
+    function updateCompanyName(string memory _name) public onlyCompany {
+        require(bytes(_name).length != 0, "Please enter a company name");
+        Company storage company = companies[msg.sender];
+        company.name = _name;
+    }
+
+    /**
+     * @dev Updates the minimum weight requirement of the company for the calling address.
+     * @param _minWeightRequirement The new minimum weight requirement to be set for the company.
+     */
+    function updateCompanyMinWeightRequirement(
+        uint256 _minWeightRequirement
+    ) public onlyCompany {
+        require(
+            _minWeightRequirement > 0,
+            "Invalid minimum weight requirement"
+        );
+        Company storage company = companies[msg.sender];
+        company.minWeightRequirement = _minWeightRequirement;
+    }
+
+    /**
+     * @dev Updates the maximum price per kilogram of the company for the calling address.
+     * @param _maxPricePerKg The new maximum price per kilogram to be set for the company.
+     */
+    function updateCompanyMaxPricePerKg(
+        uint256 _maxPricePerKg
+    ) public onlyCompany {
+        require(_maxPricePerKg > 0, "Set price must be greater than zero");
+        Company storage company = companies[msg.sender];
+        company.maxPricePerKg = _maxPricePerKg;
+    }
+
+    /**
+     * @dev Updates the active status of the company for the calling address.
+     * @param _active The new active status to be set for the company.
+     */
+    function updateCompanyActiveStatus(bool _active) public onlyCompany {
+        Company storage company = companies[msg.sender];
+        company.active = _active;
+    }
+
+    /**
      * @dev This event is emitted when a picker is successfully registered on the RecCoin platform.
      */
 
@@ -273,11 +319,7 @@ contract Recycle is Ownable {
             bytes(pickers[msg.sender].name).length == 0,
             "Picker already registered"
         );
-         Picker memory newPicker = Picker(
-            _name,
-            _email,
-            0
-        );
+        Picker memory newPicker = Picker(_name, _email, 0);
         pickers[msg.sender] = newPicker;
         pickerAddresses.push(msg.sender);
 
@@ -316,6 +358,26 @@ contract Recycle is Ownable {
 
         emit PickerEdited(msg.sender, _name, _email);
         return true;
+    }
+
+    /**
+     * @dev Updates the name of a specific picker.
+     * @param _name The new name to be set for the picker.
+     */
+    function updatePickerName(string memory _name) public onlyPicker {
+        require(bytes(_name).length != 0, "Please enter a picker name");
+        Picker storage picker = pickers[msg.sender];
+        picker.name = _name;
+    }
+
+    /**
+     * @dev Updates the email of a specific picker.
+     * @param _email The new email to be set for the picker.
+     */
+    function updatePickerEmail(string memory _email) public onlyPicker {
+        require(bytes(_email).length != 0, "Please enter a picker email");
+        Picker storage picker = pickers[msg.sender];
+        picker.email = _email;
     }
 
     /**
