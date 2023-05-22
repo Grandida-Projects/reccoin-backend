@@ -62,8 +62,8 @@ contract Recycle is Ownable {
 
     struct Picker {
         string name;
-        uint256 weightDeposited;
         string email;
+        uint256 weightDeposited;
     }
 
     struct Transaction {
@@ -252,8 +252,7 @@ contract Recycle is Ownable {
 
     function registerPicker(
         string memory _name,
-        string memory _email,
-        uint256 _weightDeposited
+        string memory _email
     ) public returns (bool success) {
         require(bytes(_name).length > 0, "Please provide a valid picker name.");
         require(
@@ -264,10 +263,12 @@ contract Recycle is Ownable {
             bytes(pickers[msg.sender].name).length == 0,
             "Picker already registered"
         );
-
-        pickers[msg.sender].name = _name;
-        pickers[msg.sender].email = _email;
-        pickers[msg.sender].weightDeposited = _weightDeposited;
+         Picker memory newPicker = Picker(
+            _name,
+            _email,
+            0
+        );
+        pickers[msg.sender] = newPicker;
         pickerAddresses.push(msg.sender);
 
         emit PickerRegistered(msg.sender, _name, _email);
