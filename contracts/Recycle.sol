@@ -12,6 +12,7 @@ import "@openzeppelin/contracts/utils/Address.sol";
 
 // Import token smart contract from same directory.
 import "./RecCoin.sol";
+
 /**
  * @title Recycle
  * @dev Implementation of the Recycle contract.
@@ -57,11 +58,7 @@ contract Recycle is Ownable {
         string email
     );
 
-    event PickerPaid(
-        address sender,
-        address recipient,
-        uint256 amount
-    );
+    event PickerPaid(address sender, address recipient, uint256 amount);
 
     struct Company {
         string name;
@@ -134,6 +131,22 @@ contract Recycle is Ownable {
         );
         _;
     }
+
+    event CompanyNameUpdated(address indexed companyAddress, string newName);
+    event CompanyMinWeightRequirementUpdated(
+        address indexed companyAddress,
+        uint256 newMinWeightRequirement
+    );
+    event CompanyMaxPricePerKgUpdated(
+        address indexed companyAddress,
+        uint256 newMaxPricePerKg
+    );
+    event CompanyActiveStatusUpdated(
+        address indexed companyAddress,
+        bool newActiveStatus
+    );
+    event PickerNameUpdated(address indexed pickerAddress, string newName);
+    event PickerEmailUpdated(address indexed pickerAddress, string newEmail);
 
     /**
      * @dev Registers a new company.
@@ -251,6 +264,7 @@ contract Recycle is Ownable {
         require(bytes(_name).length != 0, "Please enter a company name");
         Company storage company = companies[msg.sender];
         company.name = _name;
+        emit CompanyNameUpdated(msg.sender, _name);
     }
 
     /**
@@ -266,6 +280,7 @@ contract Recycle is Ownable {
         );
         Company storage company = companies[msg.sender];
         company.minWeightRequirement = _minWeightRequirement;
+        emit CompanyMinWeightRequirementUpdated(msg.sender, _minWeightRequirement);
     }
 
     /**
@@ -278,6 +293,7 @@ contract Recycle is Ownable {
         require(_maxPricePerKg > 0, "Set price must be greater than zero");
         Company storage company = companies[msg.sender];
         company.maxPricePerKg = _maxPricePerKg;
+        emit CompanyMaxPricePerKgUpdated(msg.sender, _maxPricePerKg);
     }
 
     /**
@@ -287,6 +303,7 @@ contract Recycle is Ownable {
     function updateCompanyActiveStatus(bool _active) public onlyCompany {
         Company storage company = companies[msg.sender];
         company.active = _active;
+        emit CompanyActiveStatusUpdated(msg.sender, _active);
     }
 
     /**
@@ -368,6 +385,7 @@ contract Recycle is Ownable {
         require(bytes(_name).length != 0, "Please enter a picker name");
         Picker storage picker = pickers[msg.sender];
         picker.name = _name;
+        emit PickerNameUpdated(msg.sender, _name);
     }
 
     /**
@@ -378,6 +396,7 @@ contract Recycle is Ownable {
         require(bytes(_email).length != 0, "Please enter a picker email");
         Picker storage picker = pickers[msg.sender];
         picker.email = _email;
+        emit PickerEmailUpdated(msg.sender, _email);
     }
 
     /**
@@ -426,16 +445,16 @@ contract Recycle is Ownable {
      */
     function setRecCoinAddress(address _addressRec) external {
         addressRec = _addressRec;
-
     }
-
 
     /**
      * @dev Pays a picker for a completed transaction.
      * @param _transactionId The ID of the completed transaction.
      * @return success A boolean indicating if the payment was successful.
      */
-    function payPicker(uint256 _transactionId) public transactionApproved(_transactionId) returns (bool success) {
+    function payPicker(
+        uint256 _transactionId
+    ) public transactionApproved(_transactionId) returns (bool success) {
         // Implement your code here
         require(
             transactions[_transactionId].isApproved == true,
@@ -443,12 +462,13 @@ contract Recycle is Ownable {
         );
         address _pickerAddress = transactions[_transactionId].pickerAddress;
         address _companyAddress = transactions[_transactionId].companyAddress;
-        uint256 amount = transactions[_transactionId].weight * transactions[_transactionId].price; 
+        uint256 amount = transactions[_transactionId].weight *
+            transactions[_transactionId].price;
         RecCoin recCoin = RecCoin(addressRec);
         recCoin.approve(_companyAddress, amount);
         recCoin.transferFrom(msg.sender, _pickerAddress, amount);
 
         emit PickerPaid(msg.sender, _pickerAddress, amount);
-        return true;        
+        return true;
     }
 }
