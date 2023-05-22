@@ -14,16 +14,26 @@ async function main() {
   // Set up Ethereum wallet
   const [deployer] = await ethers.getSigners();
 
+  // Grab RecCoin.sol
   console.log("Deploying the RecCoin contract with the account:", deployer.address);
-
   // Set up the RecCoin contract factory
   const RecCoin = await ethers.getContractFactory("RecCoin");
-
   // Deploy the RecCoin contract
   const recCoin = await RecCoin.deploy("RecCoin", "REC", 0, ethers.utils.parseEther("1000"));
+  // display success and address
+  console.log("RecCoin contract deployed to address:", recCoin.address);
 
-  console.log("RecCoin address:", recCoin.address);
+ 
+  // Grab Recycle.sol
+  console.log("Deploying contracts with the account:", deployer.address);  
+  // Set up the Recycle contract factory
+  const Recycle = await ethers.getContractFactory("Recycle");  
+  // Deploy the Recycle contract
+  const recycle = await Recycle.deploy();  
+  console.log("Recycle contract deployed to address:", recycle.address);
+  
 }
+
 
 // Run the main function
 main().then(() => process.exit(0)).catch(error => {
