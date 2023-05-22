@@ -22,6 +22,7 @@ contract Recycle is Ownable {
     using SafeMath for uint256;
     using Address for address;
 
+    address private addressRec;
     address[] public companyAddresses;
     address[] public pickerAddresses;
     mapping(address => Company) public companies;
@@ -359,9 +360,8 @@ contract Recycle is Ownable {
 
     /**
      * @dev Function to set address of RecCoin contract
-     * @param _addressRec
+     * @param _addressRec The address of the RecCoin contract
      */
-    address addressRec;
     function setRecCoinAddress(address _addressRec) external {
         addressRec = _addressRec;
 
@@ -373,8 +373,7 @@ contract Recycle is Ownable {
      * @param _transactionId The ID of the completed transaction.
      * @return success A boolean indicating if the payment was successful.
      */
-    
-    function payPicker(uint256 _transactionId) public transactionApproved returns (bool success) {
+    function payPicker(uint256 _transactionId) public transactionApproved(_transactionId) returns (bool success) {
         // Implement your code here
         require(
             transactions[_transactionId].isApproved == true,
