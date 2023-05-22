@@ -252,7 +252,8 @@ contract Recycle is Ownable {
 
     function registerPicker(
         string memory _name,
-        string memory _email
+        string memory _email,
+        uint256 _weightDeposited
     ) public returns (bool success) {
         require(bytes(_name).length > 0, "Please provide a valid picker name.");
         require(
@@ -265,6 +266,8 @@ contract Recycle is Ownable {
         );
 
         pickers[msg.sender].name = _name;
+        pickers[msg.sender].email = _email;
+        pickers[msg.sender].weightDeposited = _weightDeposited;
         pickerAddresses.push(msg.sender);
 
         emit PickerRegistered(msg.sender, _name, _email);
