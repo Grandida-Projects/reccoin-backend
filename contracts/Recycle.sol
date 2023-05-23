@@ -12,6 +12,7 @@ import "@openzeppelin/contracts/utils/Address.sol";
 
 // Import token smart contract from same directory.
 import "./RecCoin.sol";
+
 /**
  * @title Recycle
  * @dev Implementation of the Recycle contract.
@@ -22,24 +23,13 @@ contract Recycle is Ownable {
     using SafeMath for uint256;
     using Address for address;
 
+    address private addressRec;
     address[] public companyAddresses;
     address[] public pickerAddresses;
     mapping(address => Company) public companies;
     mapping(address => Picker) public pickers;
     uint256 public totalTransactions;
     mapping(uint256 => Transaction) public transactions;
-    event CompanyRegistered(
-        address indexed companyAddress,
-        string name,
-        uint256 minWeightRequirement,
-        uint256 maxPricePerKg,
-        bool active
-    );
-    event PlasticValidated(
-        address indexed companyAddress,
-        uint256 transactionId,
-        bool isApproved
-    );
 
     enum PlasticType {
         PET,
@@ -50,17 +40,6 @@ contract Recycle is Ownable {
         PS,
         Other
     }
-    event PickerEdited(
-        address indexed pickerAddress,
-        string name,
-        string email
-    );
-
-    event PickerPaid(
-        address sender,
-        address recipient,
-        uint256 amount
-    );
 
     struct Company {
         string name;
@@ -84,6 +63,8 @@ contract Recycle is Ownable {
         bool isApproved;
     }
 
+    // ================================================== MODIFIERS ================================================== //
+
     /**
      * @dev Modifier that allows only registered companies to perform an action.
      */
@@ -92,6 +73,17 @@ contract Recycle is Ownable {
         require(
             companies[msg.sender].maxPricePerKg != 0,
             "Only a registered company can perform this action"
+        );
+        _;
+    }
+
+    /**
+     * @dev Modifier that allows only active companies to perform an action.
+     */
+    modifier onlyActiveCompany() {
+        require(
+            companies[msg.sender].active,
+            "Only active companies can perform this action"
         );
         _;
     }
@@ -133,6 +125,103 @@ contract Recycle is Ownable {
         );
         _;
     }
+
+    // ================================================== EVENTS ================================================== //
+
+    /**
+     * @dev Emitted when a company's information is successfully registered on the RecCoin platform.
+     */
+    event CompanyRegistered(
+        address indexed companyAddress,
+        string name,
+        uint256 minWeightRequirement,
+        uint256 maxPricePerKg,
+        bool active
+    );
+
+    /**
+     * @dev Emitted when a company's information is successfully edited on the RecCoin platform.
+     */
+    event CompanyEdited(
+        address indexed companyAddress,
+        string name,
+        uint256 minWeightRequirement,
+        uint256 maxPricePerKg,
+        bool active
+    );
+
+    /**
+     * @dev Emitted when a company's name is successfully updated on the RecCoin platform.
+     */
+    event CompanyNameUpdated(address indexed companyAddress, string newName);
+
+    /**
+     * @dev Emitted when a company's minimum weight requirement is successfully updated on the RecCoin platform.
+     */
+    event CompanyMinWeightRequirementUpdated(
+        address indexed companyAddress,
+        uint256 newMinWeightRequirement
+    );
+
+    /**
+     * @dev Emitted when a company's maximum price per kilogram is successfully updated on the RecCoin platform.
+     */
+    event CompanyMaxPricePerKgUpdated(
+        address indexed companyAddress,
+        uint256 newMaxPricePerKg
+    );
+
+    /**
+     * @dev Emitted when a company's active status is successfully updated on the RecCoin platform.
+     */
+    event CompanyActiveStatusUpdated(
+        address indexed companyAddress,
+        bool newActiveStatus
+    );
+
+    /**
+     * @dev Emitted when a picker is successfully registered on the RecCoin platform.
+     */
+    event PickerRegistered(
+        address indexed pickerAddress,
+        string name,
+        string email
+    );
+
+    /**
+     * @dev Emitted when a picker's information is successfully edited on the RecCoin platform.
+     */
+    event PickerEdited(
+        address indexed pickerAddress,
+        string name,
+        string email
+    );
+
+    /**
+     * @dev Emitted when a picker's name is successfully updated on the RecCoin platform.
+     */
+    event PickerNameUpdated(address indexed pickerAddress, string newName);
+
+    /**
+     * @dev Emitted when a picker's email is successfully updated on the RecCoin platform.
+     */
+    event PickerEmailUpdated(address indexed pickerAddress, string newEmail);
+
+    /**
+     * @dev Emitted when plastic is successfully validated by a company on the RecCoin platform.
+     */
+    event PlasticValidated(
+        address indexed companyAddress,
+        uint256 transactionId,
+        bool isApproved
+    );
+
+    /**
+     * @dev Emitted when a payment is made to a picker on the RecCoin platform.
+     */
+    event PickerPaid(address sender, address recipient, uint256 amount);
+
+    // ================================================== FUNCTIONS ================================================== //
 
     /**
      * @dev Registers a new company.
@@ -186,30 +275,14 @@ contract Recycle is Ownable {
         return companyAddresses.length;
     }
 
-    event CompanyEdited(
-        address indexed companyAddress,
-        string name,
-        uint256 minWeightRequirement,
-        uint256 maxPricePerKg,
-        bool active
-    );
-
-    modifier onlyActiveCompany() {
-        require(
-            companies[msg.sender].active,
-            "Only active companies can perform this action"
-        );
-        _;
-    }
-
-    /* @dev Edits an existing company.
+    /**
+     * @dev Edits an existing company.
      * @param _name The new name of the company.
      * @param _minWeightRequirement The new minimum weight requirement for the company.
      * @param _maxPricePerKg The new maximum price per kilogram set by the company.
      * @param _active The new activity status of the company.
      * @return success A boolean indicating if the edit was successful.
      */
-    // TODO: Upgrade function to allow more granular edits
     function editCompany(
         string memory _name,
         uint256 _minWeightRequirement,
@@ -224,13 +297,11 @@ contract Recycle is Ownable {
             _minWeightRequirement > 0,
             "Invalid minimum weight requirement"
         );
-
         Company storage company = companies[msg.sender];
         company.name = _name;
         company.minWeightRequirement = _minWeightRequirement;
         company.maxPricePerKg = _maxPricePerKg;
         company.active = _active;
-
         emit CompanyEdited(
             msg.sender,
             _name,
@@ -238,19 +309,61 @@ contract Recycle is Ownable {
             _maxPricePerKg,
             _active
         );
-
         return true;
     }
 
     /**
-     * @dev This event is emitted when a picker is successfully registered on the RecCoin platform.
+     * @dev Updates the name of the company for the calling address.
+     * @param _name The new name to be set for the company.
      */
+    function updateCompanyName(string memory _name) public onlyCompany {
+        require(bytes(_name).length != 0, "Please enter a company name");
+        Company storage company = companies[msg.sender];
+        company.name = _name;
+        emit CompanyNameUpdated(msg.sender, _name);
+    }
 
-    event PickerRegistered(
-        address indexed pickerAddress,
-        string name,
-        string email
-    );
+    /**
+     * @dev Updates the minimum weight requirement of the company for the calling address.
+     * @param _minWeightRequirement The new minimum weight requirement to be set for the company.
+     */
+    function updateCompanyMinWeightRequirement(
+        uint256 _minWeightRequirement
+    ) public onlyCompany {
+        require(
+            _minWeightRequirement > 0,
+            "Invalid minimum weight requirement"
+        );
+        Company storage company = companies[msg.sender];
+        company.minWeightRequirement = _minWeightRequirement;
+        emit CompanyMinWeightRequirementUpdated(
+            msg.sender,
+            _minWeightRequirement
+        );
+    }
+
+    /**
+     * @dev Updates the maximum price per kilogram of the company for the calling address.
+     * @param _maxPricePerKg The new maximum price per kilogram to be set for the company.
+     */
+    function updateCompanyMaxPricePerKg(
+        uint256 _maxPricePerKg
+    ) public onlyCompany {
+        require(_maxPricePerKg > 0, "Set price must be greater than zero");
+        Company storage company = companies[msg.sender];
+        company.maxPricePerKg = _maxPricePerKg;
+        emit CompanyMaxPricePerKgUpdated(msg.sender, _maxPricePerKg);
+    }
+
+    /**
+     * @dev Updates the active status of the company for the calling address.
+     * @param _active The new active status to be set for the company.
+     */
+    function updateCompanyActiveStatus(bool _active) public onlyCompany {
+        Company storage company = companies[msg.sender];
+        company.active = _active;
+        emit CompanyActiveStatusUpdated(msg.sender, _active);
+    }
 
     /**
      * @dev Registers a new picker.
@@ -258,7 +371,6 @@ contract Recycle is Ownable {
      * @param _email The email address of the picker.
      * @return success A boolean indicating if the registration was successful.
      */
-
     function registerPicker(
         string memory _name,
         string memory _email
@@ -272,16 +384,10 @@ contract Recycle is Ownable {
             bytes(pickers[msg.sender].name).length == 0,
             "Picker already registered"
         );
-         Picker memory newPicker = Picker(
-            _name,
-            _email,
-            0
-        );
+        Picker memory newPicker = Picker(_name, _email, 0);
         pickers[msg.sender] = newPicker;
         pickerAddresses.push(msg.sender);
-
         emit PickerRegistered(msg.sender, _name, _email);
-
         return true;
     }
 
@@ -308,13 +414,33 @@ contract Recycle is Ownable {
             bytes(_email).length > 0,
             "Please provide a valid email address."
         );
-
         Picker storage existingPicker = pickers[msg.sender];
         existingPicker.name = _name;
         existingPicker.email = _email;
-
         emit PickerEdited(msg.sender, _name, _email);
         return true;
+    }
+
+    /**
+     * @dev Updates the name of a specific picker.
+     * @param _name The new name to be set for the picker.
+     */
+    function updatePickerName(string memory _name) public onlyPicker {
+        require(bytes(_name).length != 0, "Please enter a picker name");
+        Picker storage picker = pickers[msg.sender];
+        picker.name = _name;
+        emit PickerNameUpdated(msg.sender, _name);
+    }
+
+    /**
+     * @dev Updates the email of a specific picker.
+     * @param _email The new email to be set for the picker.
+     */
+    function updatePickerEmail(string memory _email) public onlyPicker {
+        require(bytes(_email).length != 0, "Please enter a picker email");
+        Picker storage picker = pickers[msg.sender];
+        picker.email = _email;
+        emit PickerEmailUpdated(msg.sender, _email);
     }
 
     /**
@@ -359,22 +485,20 @@ contract Recycle is Ownable {
 
     /**
      * @dev Function to set address of RecCoin contract
-     * @param _addressRec
+     * @param _addressRec The address of the RecCoin contract
      */
-    address addressRec;
     function setRecCoinAddress(address _addressRec) external {
         addressRec = _addressRec;
-
     }
-
 
     /**
      * @dev Pays a picker for a completed transaction.
      * @param _transactionId The ID of the completed transaction.
      * @return success A boolean indicating if the payment was successful.
      */
-    
-    function payPicker(uint256 _transactionId) public transactionApproved returns (bool success) {
+    function payPicker(
+        uint256 _transactionId
+    ) public transactionApproved(_transactionId) returns (bool success) {
         // Implement your code here
         require(
             transactions[_transactionId].isApproved == true,
@@ -382,12 +506,12 @@ contract Recycle is Ownable {
         );
         address _pickerAddress = transactions[_transactionId].pickerAddress;
         address _companyAddress = transactions[_transactionId].companyAddress;
-        uint256 amount = transactions[_transactionId].weight * transactions[_transactionId].price; 
+        uint256 amount = transactions[_transactionId].weight *
+            transactions[_transactionId].price;
         RecCoin recCoin = RecCoin(addressRec);
         recCoin.approve(_companyAddress, amount);
         recCoin.transferFrom(msg.sender, _pickerAddress, amount);
-
         emit PickerPaid(msg.sender, _pickerAddress, amount);
-        return true;        
+        return true;
     }
 }
