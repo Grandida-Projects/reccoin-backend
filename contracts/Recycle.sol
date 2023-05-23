@@ -466,7 +466,11 @@ contract Recycle is Ownable {
     function depositPlastic(
         address _companyAddress,
         uint256 _weight
-    ) public returns (uint256 transactionId) {
+    ) public onlyPicker returns (uint256 transactionId) {
+        require(
+            companies[_companyAddress].active,
+            "This company is no longer active"
+        );
         Transaction memory newTransaction = Transaction(
             totalTransactions,
             _companyAddress,
