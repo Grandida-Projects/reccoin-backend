@@ -10,6 +10,8 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 // Import the Address utility library for working with Ethereum addresses.
 import "@openzeppelin/contracts/utils/Address.sol";
 
+// Import token smart contract from same directory.
+import "./RecCoin.sol";
 /**
  * @title Recycle
  * @dev Implementation of the Recycle contract.
@@ -38,6 +40,7 @@ contract Recycle is Ownable {
         uint256 transactionId,
         bool isApproved
     );
+
     enum PlasticType {
         PET,
         HDPE,
@@ -51,6 +54,12 @@ contract Recycle is Ownable {
         address indexed pickerAddress,
         string name,
         string email
+    );
+
+    event PickerPaid(
+        address sender,
+        address recipient,
+        uint256 amount
     );
 
     struct Company {
@@ -349,11 +358,36 @@ contract Recycle is Ownable {
     }
 
     /**
+     * @dev Function to set address of RecCoin contract
+     * @param _addressRec
+     */
+    address addressRec;
+    function setRecCoinAddress(address _addressRec) external {
+        addressRec = _addressRec;
+
+    }
+
+
+    /**
      * @dev Pays a picker for a completed transaction.
      * @param _transactionId The ID of the completed transaction.
      * @return success A boolean indicating if the payment was successful.
      */
-    function payPicker(uint256 _transactionId) public returns (bool success) {
+    
+    function payPicker(uint256 _transactionId) public transactionApproved returns (bool success) {
         // Implement your code here
+        require(
+            transactions[_transactionId].isApproved == true,
+            "Transaction does not exist"
+        );
+        address _pickerAddress = transactions[_transactionId].pickerAddress;
+        address _companyAddress = transactions[_transactionId].companyAddress;
+        uint256 amount = transactions[_transactionId].weight * transactions[_transactionId].price; 
+        RecCoin recCoin = RecCoin(addressRec);
+        recCoin.approve(_companyAddress, amount);
+        recCoin.transferFrom(msg.sender, _pickerAddress, amount);
+
+        emit PickerPaid(msg.sender, _pickerAddress, amount);
+        return true;        
     }
 }
