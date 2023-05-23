@@ -31,6 +31,10 @@ contract Recycle is Ownable {
     uint256 public totalTransactions;
     mapping(uint256 => Transaction) public transactions;
 
+    constructor() {
+        totalTransactions = 0;
+    }
+
     enum PlasticType {
         PET,
         HDPE,
@@ -52,6 +56,7 @@ contract Recycle is Ownable {
         string name;
         string email;
         uint256 weightDeposited;
+        uint256[] transactions;
     }
 
     struct Transaction {
@@ -384,11 +389,20 @@ contract Recycle is Ownable {
             bytes(pickers[msg.sender].name).length == 0,
             "Picker already registered"
         );
-        Picker memory newPicker = Picker(_name, _email, 0);
+        uint256[] memory empty;
+        Picker memory newPicker = Picker(_name, _email, 0, empty);
         pickers[msg.sender] = newPicker;
         pickerAddresses.push(msg.sender);
         emit PickerRegistered(msg.sender, _name, _email);
         return true;
+    }
+
+    /**
+     * @dev Gets content of the Picker struct since Solidity does not return arrays from structs inside mappings.
+     * @return picker The struct containing the information about registered pickers.
+     */
+    function getPicker(address _address) public view returns (Picker memory) {
+        return pickers[_address];
     }
 
     /**
@@ -453,7 +467,20 @@ contract Recycle is Ownable {
         address _companyAddress,
         uint256 _weight
     ) public returns (uint256 transactionId) {
-        // Implement your code here
+        Transaction memory newTransaction = Transaction(
+            totalTransactions,
+            _companyAddress,
+            msg.sender,
+            _weight,
+            companies[_companyAddress].maxPricePerKg,
+            false
+        );
+        transactions[totalTransactions] = newTransaction;
+        Picker storage existingPicker = pickers[msg.sender];
+        existingPicker.weightDeposited += _weight;
+        existingPicker.transactions.push(totalTransactions);
+        totalTransactions++;
+        return newTransaction.id;
     }
 
     /**
