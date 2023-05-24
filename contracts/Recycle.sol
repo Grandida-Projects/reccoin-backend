@@ -543,12 +543,11 @@ contract Recycle is Ownable {
             "Transaction does not exist"
         );
         address _pickerAddress = transactions[_transactionId].pickerAddress;
-        address _companyAddress = transactions[_transactionId].companyAddress;
+       
         uint256 amount = transactions[_transactionId].weight *
-            transactions[_transactionId].price;
+        transactions[_transactionId].price;
         RecCoin recCoin = RecCoin(addressRec);
-        recCoin.approve(_companyAddress, amount);
-        recCoin.transferFrom(msg.sender, _pickerAddress, amount);
+        recCoin.transfer(_pickerAddress, amount);
         emit PickerPaid(msg.sender, _pickerAddress, amount);
         return true;
     }
