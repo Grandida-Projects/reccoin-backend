@@ -13,6 +13,9 @@ import "@openzeppelin/contracts/utils/Address.sol";
 // Import token smart contract from same directory.
 import "./RecCoin.sol";
 
+// Import the SafeERC20 library for working with ERC20 tokens.
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+
 /**
  * @title Recycle
  * @dev Implementation of the Recycle contract.
@@ -22,6 +25,7 @@ import "./RecCoin.sol";
 contract Recycle is Ownable {
     using SafeMath for uint256;
     using Address for address;
+    using SafeERC20 for IERC20;
 
     address private addressRec;
     address[] public companyAddresses;
@@ -66,6 +70,7 @@ contract Recycle is Ownable {
         uint256 weight;
         uint256 price;
         bool isApproved;
+        bool isPaid;
     }
 
     // ================================================== MODIFIERS ================================================== //
@@ -485,6 +490,7 @@ contract Recycle is Ownable {
             msg.sender,
             _weight,
             companies[_companyAddress].maxPricePerKg,
+            false,
             false
         );
         transactions[totalTransactions] = newTransaction;
@@ -503,7 +509,7 @@ contract Recycle is Ownable {
      */
     function validatePlastic(
         uint256 _transactionId
-    ) public onlyActiveCompany returns (bool success) {
+    ) public onlyActiveCompany transactionExists(_transactionId) returns (bool success) {
         require(
             transactions[_transactionId].companyAddress == msg.sender,
             "This transaction belongs to another company"
@@ -536,20 +542,15 @@ contract Recycle is Ownable {
      */
     function payPicker(
         uint256 _transactionId
-    ) public transactionApproved(_transactionId) returns (bool success) {
-        // Implement your code here
-        require(
-            transactions[_transactionId].isApproved == true,
-            "Transaction does not exist"
-        );
+    ) public onlyActiveCompany transactionApproved(_transactionId) returns (bool success) {
         address _pickerAddress = transactions[_transactionId].pickerAddress;
-        address _companyAddress = transactions[_transactionId].companyAddress;
         uint256 amount = transactions[_transactionId].weight *
             transactions[_transactionId].price;
-        RecCoin recCoin = RecCoin(addressRec);
-        recCoin.approve(_companyAddress, amount);
-        recCoin.transferFrom(msg.sender, _pickerAddress, amount);
-        emit PickerPaid(msg.sender, _pickerAddress, amount);
+        IERC20 recCoin = IERC20(addressRec);
+        recCoin.safeApprove(msg.sender, amount);
+        recCoin.safeTransferFrom(msg.sender, _pickerAddress, amount);
+        transactions[_transactionId].isPaid == true;
+        emit PickerPaid(msg.sender, _pickerAddress, amount);  
         return true;
     }
 }
