@@ -213,12 +213,20 @@ contract Recycle is Ownable {
     event PickerEmailUpdated(address indexed pickerAddress, string newEmail);
 
     /**
+     * @dev Emitted when plastic is successfully deposited by a picker to a company on the RecCoin platform
+     */
+    event PlasticDeposited(
+        address indexed pickerAddress,
+        address indexed companyAddress,
+        uint256 weight
+    );
+
+    /**
      * @dev Emitted when plastic is successfully validated by a company on the RecCoin platform.
      */
     event PlasticValidated(
         address indexed companyAddress,
-        uint256 transactionId,
-        bool isApproved
+        uint256 transactionId
     );
 
     /**
@@ -466,7 +474,11 @@ contract Recycle is Ownable {
     function depositPlastic(
         address _companyAddress,
         uint256 _weight
-    ) public returns (uint256 transactionId) {
+    ) public onlyPicker returns (uint256 transactionId) {
+        require(
+            companies[_companyAddress].active,
+            "This company is no longer active"
+        );
         Transaction memory newTransaction = Transaction(
             totalTransactions,
             _companyAddress,
@@ -480,34 +492,33 @@ contract Recycle is Ownable {
         existingPicker.weightDeposited += _weight;
         existingPicker.transactions.push(totalTransactions);
         totalTransactions++;
+        emit PlasticDeposited(msg.sender, _companyAddress, _weight);
         return newTransaction.id;
     }
 
     /**
      * @dev Validates a plastic transaction.
      * @param _transactionId The ID of the transaction to be validated.
-     * @param _isApproved A boolean indicating if the transaction is approved.
      * @return success A boolean indicating if the validation was successful.
      */
     function validatePlastic(
-        uint256 _transactionId,
-        bool _isApproved
-    ) public returns (bool success) {
+        uint256 _transactionId
+    ) public onlyActiveCompany returns (bool success) {
+        require(
+            transactions[_transactionId].companyAddress == msg.sender,
+            "This transaction belongs to another company"
+        );
         require(
             transactions[_transactionId].weight >=
                 companies[msg.sender].minWeightRequirement,
             "Weight of plastic deposited is below the minimum accepted weight of the company"
         );
-        if (_isApproved == true) {
-            transactions[_transactionId].isApproved = true;
-            transactions[_transactionId].id = _transactionId;
-            return true;
-        }
+        transactions[_transactionId].isApproved = true;
         emit PlasticValidated(
             transactions[_transactionId].companyAddress,
-            _transactionId,
-            _isApproved
+            _transactionId
         );
+        return true;
     }
 
     /**
