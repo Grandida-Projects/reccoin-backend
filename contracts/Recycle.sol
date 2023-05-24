@@ -213,6 +213,15 @@ contract Recycle is Ownable {
     event PickerEmailUpdated(address indexed pickerAddress, string newEmail);
 
     /**
+     * @dev Emitted when plastic is successfully deposited by a picker to a company on the RecCoin platform
+     */
+    event PlasticDeposited(
+        address indexed pickerAddress,
+        address indexed companyAddress,
+        uint256 weight
+    );
+
+    /**
      * @dev Emitted when plastic is successfully validated by a company on the RecCoin platform.
      */
     event PlasticValidated(
@@ -484,6 +493,7 @@ contract Recycle is Ownable {
         existingPicker.weightDeposited += _weight;
         existingPicker.transactions.push(totalTransactions);
         totalTransactions++;
+        emit PlasticDeposited(msg.sender, _companyAddress, _weight);
         return newTransaction.id;
     }
 
