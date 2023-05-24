@@ -226,8 +226,7 @@ contract Recycle is Ownable {
      */
     event PlasticValidated(
         address indexed companyAddress,
-        uint256 transactionId,
-        bool isApproved
+        uint256 transactionId
     );
 
     /**
@@ -500,28 +499,26 @@ contract Recycle is Ownable {
     /**
      * @dev Validates a plastic transaction.
      * @param _transactionId The ID of the transaction to be validated.
-     * @param _isApproved A boolean indicating if the transaction is approved.
      * @return success A boolean indicating if the validation was successful.
      */
     function validatePlastic(
-        uint256 _transactionId,
-        bool _isApproved
-    ) public returns (bool success) {
+        uint256 _transactionId
+    ) public onlyActiveCompany returns (bool success) {
+        require(
+            transactions[_transactionId].companyAddress == msg.sender,
+            "This transaction belongs to another company"
+        );
         require(
             transactions[_transactionId].weight >=
                 companies[msg.sender].minWeightRequirement,
             "Weight of plastic deposited is below the minimum accepted weight of the company"
         );
-        if (_isApproved == true) {
-            transactions[_transactionId].isApproved = true;
-            transactions[_transactionId].id = _transactionId;
-            return true;
-        }
+        transactions[_transactionId].isApproved = true;
         emit PlasticValidated(
             transactions[_transactionId].companyAddress,
-            _transactionId,
-            _isApproved
+            _transactionId
         );
+        return true;
     }
 
     /**
