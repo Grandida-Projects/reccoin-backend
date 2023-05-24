@@ -104,9 +104,48 @@ describe("Recycle", function () {
       // Log key details to the console
       console.log("Registered Company Count:", registeredCompanyCount.toNumber());
   
-      // Check if the count is correct
+      // Check if the count corresponds to what is expected.
       expect(registeredCompanyCount).to.equal(3);
     });
-  });  
+
+  });
+
+  
+  // The following are tests on the getRegisteredCompanyCount function of the Recycle smart contract - line 375 of Recycle.sol
+  describe("updateCompanyActiveStatus", function () {
+    it("should update the active status of a company", async function () {
+      // Register a new company for the trial
+      const companyName = "Test Company";
+      const minWeightRequirement = 100;
+      const maxPricePerKg = 10;
+      const isActive = true;
+
+      await recycle.connect(company).registerCompany(
+        companyName,
+        minWeightRequirement,
+        maxPricePerKg,
+        isActive
+      );
+
+      // Update the active status of the company - First check
+      const newActiveStatus = false;
+      await recycle.connect(company).updateCompanyActiveStatus(newActiveStatus);
+
+      // Ascertain that the active status is updated correctly
+      const updatedCompany = await recycle.companies(company.address);
+      expect(updatedCompany.active).to.equal(newActiveStatus);
+      console.log("Updated company active status on first check: ", updatedCompany.active);
+
+      // A counter-update of the active status of the company - Second check
+      const newerActiveStatus = true;
+      await recycle.connect(company).updateCompanyActiveStatus(newerActiveStatus);
+
+      // Ascertain that the active status is counter-updated correctly
+      const updatedCompanyCheckTwo = await recycle.companies(company.address);
+      expect(updatedCompanyCheckTwo.active).to.equal(newerActiveStatus);
+      console.log("Updated company active status on second check: ", updatedCompanyCheckTwo.active);
+    });
+  });
+
   
   });
