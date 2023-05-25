@@ -9,7 +9,7 @@ describe("RecCoin", function () {
   let account1;
   let account2;
   let accountss;
-  // assumme base denomination of the RecCoin token is handled using ethers.utils.parseEther
+  // assume base denomination of the RecCoin token is handled using ethers.utils.parseEther
   let _decimals = 0;
 
   const initialSupply = ethers.utils.parseEther("1000");
@@ -27,7 +27,7 @@ describe("RecCoin", function () {
   });
 
   // Test to ascertain that the owner is rightly set
-  describe("Deployment", function () {
+  describe("deployment", function () {
     it("Should set the right owner", async function () {
       expect(await recCoin.owner()).to.equal(owner.address);
       console.log("Owner set correctly as " + owner.address);
@@ -55,8 +55,8 @@ describe("RecCoin", function () {
     });
   });
 
-  // The following are tests on the transfer function of the RecCoin smart contract - line 63 of RecCoin.sol
-  describe("Transfers", function () {
+  // The following are tests on the transfer function of the RecCoin smart contract - line 62 of RecCoin.sol
+  describe("transfer", function () {
     it("Should transfer tokens from sender to account1 and account2", async function () {
       const initialBalanceOwner = await recCoin.balanceOf(owner.address);
       const initialBalanceAccount1 = await recCoin.balanceOf(account1.address);
@@ -94,6 +94,27 @@ describe("RecCoin", function () {
       console.log("New balance of account2 with address: " + account2.address + " is " + Number(ethers.utils.formatEther(newBalanceAccount2)));
     });
   });
+
+  
+  // The following are tests on the approve function of the RecCoin smart contract - line 74 of RecCoin.sol
+  describe("approve", function () {
+    it("should approve token transfer", async function () {
+      const amountToApprove = 80;
+      const spender = account1.address;
+      const initialAllowance = await recCoin.allowance(owner.address, spender);
+  
+      // owner approves token transfer
+      await recCoin.connect(owner).approve(spender, amountToApprove);
+  
+      // Verify the allowance so granted
+      const newAllowance = await recCoin.allowance(owner.address, spender);
+      console.log("Initial approved spending:", initialAllowance.toString());
+      console.log("New approved spending:", newAllowance.toString());
+  
+      expect(newAllowance).to.equal(initialAllowance.add(amountToApprove));
+    });
+  });
+
 
   // The following are tests on the transferFrom function of the RecCoin smart contract - line 87 of RecCoin.sol
    describe("transferFrom", function () {
@@ -163,9 +184,48 @@ describe("RecCoin", function () {
     });
   });
 
+
+  // This tests the mint function of the Recoin smart contract - line 98 of Recoin.sol
+  describe("mint", function () {
+    it("should mint tokens to the specified account", async function () {
+      const amount = ethers.utils.parseEther("100");
+  
+      // Mint tokens to the specified account
+      await recCoin.connect(owner).mint(account1.address, amount);
+      console.log("Tokens minted to account1: ", Number(ethers.utils.formatEther(amount)));
+  
+      // Check the balance of the specified account
+      const balance = await recCoin.balanceOf(account1.address);
+      console.log("Balance of account1: ", Number(ethers.utils.formatEther(balance)));
+  
+      // Check the total supply of tokens in the contract
+      const totalSupply = await recCoin.totalSupply();
+      console.log("Total supply of tokens: ", Number(ethers.utils.formatEther(totalSupply)));
+  
+      // Verify that the balance of the specified account is equal to the minted amount
+      expect(balance).to.equal(amount);
+  
+      // Verify that the total supply has increased by the minted amount
+      const expectedTotalSupply = initialSupply.add(amount);
+      expect(totalSupply).to.equal(expectedTotalSupply);
+      console.log("Expected total supply after recent mint: ", Number(ethers.utils.formatEther(expectedTotalSupply)));
+    });
+  
+    it("should revert if minting to the zero address", async function () {
+      const amount = 100;
+  
+      // Expect the minting to the zero address to revert with an error message
+      await expect(recCoin.connect(owner).mint("0x0000000000000000000000000000000000000000", amount))
+        .to.be.revertedWith("RecCoin: mint to the zero address");
+      console.log("Minting to zero address reverted.");
+    });
+  });
+  
+
+
   // This tests the burn function of the RecCoin smart contract - line 114 of RecCoin.sol
   describe("burn", function () {
-    it("Burns a specifies number of token and removes it from total supply", async function () {
+    it("Burns a specified number of tokens and removes it from total supply", async function () {
 
       const amountToBurn = ethers.utils.parseEther("80");
 
