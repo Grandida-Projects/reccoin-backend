@@ -12,11 +12,12 @@ describe("Recycle", function () {
   let secondCompany;
   let thirdCompany;
   let picker;
+  let picker2;
 
   beforeEach(async function () {
     // Deploy the contract and get the deployed instances
     // Assign test accounts to key players (owner, company, picker) in this contract 
-    [owner, company, secondCompany, thirdCompany, picker] = await ethers.getSigners();
+    [owner, company, secondCompany, thirdCompany, picker, picker2] = await ethers.getSigners();
     const Recycle = await ethers.getContractFactory("Recycle");
     recycle = await Recycle.deploy();
     await recycle.deployed();
@@ -230,4 +231,83 @@ describe("Recycle", function () {
       //~~ You can also use receipt.events[0].args to check for events      
     });
   });
+
+  // The following are tests on the registerPicker function of the Recycle smart contract - line 387 of Recycle.sol
+  describe("registerPicker", function () {
+    it("should register a picker", async function () {
+      // Register a new picker
+      const pickerName = "Kobiko";
+      const pickerEmail = "kobiko@gmail.com";
+      // Connect the picker's account to the contract
+      const connectedPicker = await recycle.connect(picker)
+      //Call the contract function
+      const registerPicker = await connectedPicker.registerPicker(
+        pickerName,
+        pickerEmail
+      );
+
+      await registerPicker.wait(1)
+
+      // Ascertain the picker is registered correctly
+      const registeredPicker = await recycle.pickers(picker.address);
+      expect(registeredPicker.name).to.equal(pickerName);
+
+      expect(registeredPicker.email).to.equal(pickerEmail);
+    });
+  });
+
+  // The following are tests on the getPicker function of the Recycle smart contract - line 412 of Recycle.sol
+  describe("getPicker", function () {
+    it("should get a registered picker", async function () {
+      // Register a new picker
+      const pickerName = "Kobiko";
+      const pickerEmail = "kobiko@gmail.com";
+      // Connect the picker's account to the contract
+      const connectedPicker = await recycle.connect(picker)
+      //Call the contract function
+      const registerPicker = await connectedPicker.registerPicker(
+        pickerName,
+        pickerEmail
+      );
+
+      await registerPicker.wait(1)
+
+      // Check if picker can be gotten from the function
+      const gottenPicker = await recycle.getPicker(picker.address);
+      expect(gottenPicker[0]).to.equal(pickerName);
+    });
+  });
+
+  // The following are tests on the getRegisteredPickerCount function of the Recycle smart contract - line 420 of Recycle.sol
+  describe("getRegisteredPickerCount", function () {
+    it("should return the correct count of registered pickers", async function () {
+      // Register a new picker
+      const pickerName = "Kobiko";
+      const pickerEmail = "kobiko@gmail.com";
+      // Connect the picker's account to the contract
+      const connectedPicker = await recycle.connect(picker)
+      //Call the contract function
+      const registerPicker = await connectedPicker.registerPicker(
+        pickerName,
+        pickerEmail
+      );
+
+      // Register a second company using a different signer
+      const picker2Name = "David Grass";
+      const picker2Email = "grass@gmail.com";
+      // Connect the picker's account to the contract
+      const connectedPicker2 = await recycle.connect(picker2)
+      //Call the contract function
+      const registerPicker2 = await connectedPicker2.registerPicker(
+        picker2Name,
+        picker2Email
+      );
+      // Get the number of registered pickers
+      const registeredPickerCount = await recycle.getRegisteredPickerCount();
+
+      // Check if the number of pickers corresponds to what is expected(2 pickers).
+      expect(registeredPickerCount).to.equal(2);
+    });
+  });
+
 });
