@@ -133,7 +133,7 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
 
     /**
      * @dev Internal function to approve the spender to spend tokens on behalf of the owner.
-     * @param owner The address of the token owner.
+     * @param tokenOwner The address of the token owner.
      * @param spender The address of the spender.
      * @param amount The amount of tokens to allow.
      */
