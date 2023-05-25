@@ -539,10 +539,7 @@ contract Recycle is Ownable {
         uint256 _transactionId
     ) public transactionApproved(_transactionId) returns (bool success) {
         // Implement your code here
-        require(
-            transactions[_transactionId].isApproved == true,
-            "Transaction does not exist"
-        );
+        require(transactions[_transactionId].isApproved, "Transaction does not exist");
         address _pickerAddress = transactions[_transactionId].pickerAddress;
        
         uint256 amount = transactions[_transactionId].weight *
