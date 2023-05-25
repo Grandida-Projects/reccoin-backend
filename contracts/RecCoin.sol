@@ -138,12 +138,12 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
      * @param amount The amount of tokens to allow.
      */
 
-    function _approve(address owner, address spender, uint256 amount) internal {
-        require(owner != address(0), "RecCoin: approve from the zero address");
+    function _approve(address tokenOwner, address spender, uint256 amount) internal {
+        require(tokenOwner != address(0), "RecCoin: approve from the zero address");
         require(spender != address(0), "RecCoin: approve to the zero address");
 
-        allowance[owner][spender] = amount;
-        emit Approval(owner, spender, amount);
+        allowance[tokenOwner][spender] = amount;
+        emit Approval(tokenOwner, spender, amount);
     }
 
     /**
