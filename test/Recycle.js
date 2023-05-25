@@ -193,4 +193,41 @@ describe("Recycle", function () {
     });
   });
 
+  // The following are tests on the updateCompanyMinWeightRequirement function of the Recycle smart contract - line 343 of Recycle.sol
+  describe("updateCompanyMinWeightRequirement", function () {
+    it("should update the company's Minimum weight requirement", async function () {
+      // Register a new company
+      const companyName = "Test Company";
+      const minWeightRequirement = 100;
+      const maxPricePerKg = 10;
+      const isActive = true;
+      // Connect the company's account to the contract
+      const connectedcompany = await recycle.connect(company)
+      //Call the contract function
+      const registerCompany = await connectedcompany.registerCompany(
+        companyName,
+        minWeightRequirement,
+        maxPricePerKg,
+        isActive
+      );
+      await registerCompany.wait(1)
+
+      // Update the weight requirement to a new value
+      const newMinWeightRequirement = 200;
+
+      // Call the contract function
+      const updateWeight = await connectedcompany.updateCompanyMinWeightRequirement(
+        newMinWeightRequirement)
+
+      const receipt = await updateWeight.wait(1)
+
+      // Check if the function emits events with these values
+      expect(updateWeight, 'CompanyMinWeightRequirementUpdated', {
+        arg1: company.address,
+        arg2: newMinWeightRequirement
+      });
+
+      //~~ You can also use receipt.events[0].args to check for events      
+    });
+  });
 });
