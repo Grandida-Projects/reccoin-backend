@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 
 // Import the Ownable contract, which provides basic authorization control.
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -33,16 +33,6 @@ contract Recycle is Ownable {
 
     constructor() {
         totalTransactions = 0;
-    }
-
-    enum PlasticType {
-        PET,
-        HDPE,
-        PVC,
-        LDPE,
-        PP,
-        PS,
-        Other
     }
 
     struct Company {
@@ -526,7 +516,7 @@ contract Recycle is Ownable {
      * @param _addressRec The address of the RecCoin contract
      */
     function setRecCoinAddress(address _addressRec) external {
-        require(_addressRec!= address(0x0));
+        require(_addressRec != address(0x0));
         addressRec = _addressRec;
     }
 
@@ -539,11 +529,14 @@ contract Recycle is Ownable {
         uint256 _transactionId
     ) public transactionApproved(_transactionId) returns (bool success) {
         // Implement your code here
-        require(transactions[_transactionId].isApproved, "Transaction does not exist");
+        require(
+            transactions[_transactionId].isApproved,
+            "Transaction does not exist"
+        );
         address _pickerAddress = transactions[_transactionId].pickerAddress;
-       
+
         uint256 amount = transactions[_transactionId].weight *
-        transactions[_transactionId].price;
+            transactions[_transactionId].price;
         RecCoin recCoin = RecCoin(addressRec);
         recCoin.transfer(_pickerAddress, amount);
         emit PickerPaid(msg.sender, _pickerAddress, amount);
