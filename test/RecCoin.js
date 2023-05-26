@@ -217,7 +217,7 @@ describe("RecCoin", function () {
       // Expect the minting to the zero address to revert with an error message
       await expect(recCoin.connect(owner).mint("0x0000000000000000000000000000000000000000", amount))
         .to.be.revertedWith("RecCoin: mint to the zero address");
-      console.log("Minting to zero address reverted.");
+      console.log("Minting to zero address reverted.!");
     });
   });
   
