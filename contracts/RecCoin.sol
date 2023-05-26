@@ -48,7 +48,6 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
 
         name = _name;
         symbol = _symbol;
-        decimals = _decimals;
         totalSupply = initialSupply.mul(10 ** decimals);
         balanceOf[msg.sender] = totalSupply;
 
