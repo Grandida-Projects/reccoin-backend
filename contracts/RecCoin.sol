@@ -16,7 +16,6 @@ import "@openzeppelin/contracts/utils/Address.sol";
 // Import the Ownable contract, which provides basic authorization control.
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-
 /**
  * @title RecCoin
  * @dev Implementation of the RecCoin ERC20 token contract.
@@ -27,31 +26,34 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
     using SafeMath for uint256;
     using Address for address;
 
-    string public name;  // The name of the token
-    string public symbol;  // The symbol of the token
-    uint8 public decimals;  // The number of decimals for token display
-    uint256 public totalSupply;  // The total supply of the token
+    string public name; // The name of the token
+    string public symbol; // The symbol of the token
+    uint8 public decimals = 18; // The number of decimals for token display
+    uint256 public totalSupply; // The total supply of the token
 
-    mapping (address => uint256) public balanceOf;  // Mapping to track the balanceOf of token holders
-    mapping (address => mapping (address => uint256)) public allowance;  // Mapping to track the allowances granted by token holders
+    mapping(address => uint256) public balanceOf; // Mapping to track the balanceOf of token holders
+    mapping(address => mapping(address => uint256)) public allowance; // Mapping to track the allowances granted by token holders
 
     /**
      * @dev Constructor function.
      * It initializes the token contract with the provided initial supply of tokens.
      * The initial supply is assigned to the contract deployer.
      */
-    constructor(string memory _name, string memory _symbol, uint8 _decimals, uint256 initialSupply) {
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        uint256 initialSupply
+    ) {
         require(initialSupply > 0, "RecCoin: initial supply cannot be zero");
 
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
-        totalSupply = initialSupply.mul(10 ** _decimals);
+        totalSupply = initialSupply.mul(10 ** decimals);
         balanceOf[msg.sender] = totalSupply;
 
         emit Transfer(address(0), msg.sender, totalSupply);
     }
-
 
     /**
      * @dev Transfers tokens from the sender's account to the specified recipient.
@@ -63,7 +65,6 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
         _transfer(msg.sender, recipient, amount);
         return true;
     }
-
 
     /**
      * @dev Sets the allowance for the spender to spend tokens on behalf of the owner.
@@ -83,9 +84,20 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
      * @param amount The amount of tokens to transfer.
      * @return A boolean value indicating whether the transfer was successful or not.
      */
-    function transferFrom(address sender, address recipient, uint256 amount) public returns (bool) {
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) public returns (bool) {
         _transfer(sender, recipient, amount);
-        _approve(sender, msg.sender, allowance[sender][msg.sender].sub(amount, "RecCoin: transfer amount exceeds allowance"));
+        _approve(
+            sender,
+            msg.sender,
+            allowance[sender][msg.sender].sub(
+                amount,
+                "RecCoin: transfer amount exceeds allowance"
+            )
+        );
         return true;
     }
 
@@ -109,7 +121,7 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
      * Only the contract owner can call this function.
      * @param amount The amount of tokens to burn.
      */
-     
+
     function burn(uint256 amount) public onlyOwner {
         _burn(msg.sender, amount);
     }
@@ -121,10 +133,23 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
      * @param amount The amount of tokens to transfer.
      */
 
-    function _transfer(address sender, address recipient, uint256 amount) internal {
-        require(sender != address(0), "RecCoin: transfer from the zero address");
-        require(recipient != address(0), "RecCoin: transfer to the zero address");
-        require(balanceOf[sender] >= amount, "RecCoin: transfer amount exceeds balance");
+    function _transfer(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) internal {
+        require(
+            sender != address(0),
+            "RecCoin: transfer from the zero address"
+        );
+        require(
+            recipient != address(0),
+            "RecCoin: transfer to the zero address"
+        );
+        require(
+            balanceOf[sender] >= amount,
+            "RecCoin: transfer amount exceeds balance"
+        );
 
         balanceOf[sender] = balanceOf[sender].sub(amount);
         balanceOf[recipient] = balanceOf[recipient].add(amount);
@@ -138,8 +163,15 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
      * @param amount The amount of tokens to allow.
      */
 
-    function _approve(address tokenOwner, address spender, uint256 amount) internal {
-        require(tokenOwner != address(0), "RecCoin: approve from the zero address");
+    function _approve(
+        address tokenOwner,
+        address spender,
+        uint256 amount
+    ) internal {
+        require(
+            tokenOwner != address(0),
+            "RecCoin: approve from the zero address"
+        );
         require(spender != address(0), "RecCoin: approve to the zero address");
 
         allowance[tokenOwner][spender] = amount;
@@ -154,11 +186,13 @@ contract RecCoin is IERC20, IERC20Metadata, Ownable {
 
     function _burn(address account, uint256 amount) internal {
         require(account != address(0), "RecCoin: burn from the zero address");
-        require(balanceOf[account] >= amount, "RecCoin: burn amount exceeds balance");
+        require(
+            balanceOf[account] >= amount,
+            "RecCoin: burn amount exceeds balance"
+        );
 
         balanceOf[account] = balanceOf[account].sub(amount);
         totalSupply = totalSupply.sub(amount);
         emit Transfer(account, address(0), amount);
     }
 }
-
