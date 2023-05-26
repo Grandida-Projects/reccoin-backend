@@ -111,6 +111,31 @@ describe("Recycle", function () {
 
   });
 
+   // The following are tests on the updateCompanyName function of the Recycle smart contract - line 332 of Recycle.sol
+   describe("updateCompanyName", function () {
+    it("should update company name", async function () {
+      // Register a new company
+      const companyName = "Grandida Company";
+
+      // Register the company address
+      await recycle.connect(company).registerCompany(
+        companyName,
+        100,
+        10,
+        true
+      );
+
+      // Update the company name
+      const newName = "Grandida Testers Company";
+      await recycle.connect(company).updateCompanyName(newName);
+
+      // Ascertain that company name is updated correctly
+      const registeredCompany = await recycle.companies(company.address);
+      expect(registeredCompany.name).to.equal(newName);
+      console.log("Updated company name: ", registeredCompany.name);
+    });
+  });
+
 
   // The following are tests on the getRegisteredCompanyCount function of the Recycle smart contract - line 375 of Recycle.sol
   describe("updateCompanyActiveStatus", function () {
