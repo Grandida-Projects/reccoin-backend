@@ -526,7 +526,7 @@ contract Recycle is Ownable {
      * @return success A boolean indicating if the payment was successful.
      */
     function payPicker(
-        uint256 _transactionId
+        uint256 transactionId
     ) public transactionApproved(_transactionId) returns (bool success) {
         // Implement your code here
         require(
