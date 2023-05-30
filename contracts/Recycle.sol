@@ -513,7 +513,7 @@ contract Recycle is Ownable {
 
     /**
      * @dev Function to set address of RecCoin contract
-     * @param _addressRec The address of the RecCoin contract
+     * @param _addressRec The address of the RecCoin contract.
      */
     function setRecCoinAddress(address _addressRec) external {
         require(_addressRec != address(0x0));
