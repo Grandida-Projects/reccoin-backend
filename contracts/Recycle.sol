@@ -525,11 +525,13 @@ contract Recycle is Ownable {
      * @param _transactionId The ID of the completed transaction.
      * @return success A boolean indicating if the payment was successful.
      */
-     
+    bool internal locked = false;
     function payPicker(
         uint256 _transactionId
     ) public transactionApproved(_transactionId) returns (bool success) {
-  
+        require(!locked);
+        locked = true;
+
         require(
             transactions[_transactionId].isApproved,
             "Transaction does not exist"
