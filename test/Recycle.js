@@ -117,7 +117,7 @@ describe("Recycle", function () {
       // Register a new company
       const companyName = "Grandida Company";
 
-      // Register the company address
+      // Register the company address on Reccoin
       await recycle.connect(company).registerCompany(
         companyName,
         100,

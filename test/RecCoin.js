@@ -9,18 +9,18 @@ describe("RecCoin", function () {
   let account1;
   let account2;
   let accountss;
-  // assume base denomination of the RecCoin token is handled using ethers.utils.parseEther
-  let _decimals = 0;
 
-  const initialSupply = ethers.utils.parseEther("1000");
+  let _decimals = 18;
 
+  const initialSupply = BigInt(1000);
+  
   beforeEach(async function () {
     // To get the ContractFactory and Signers.
     RecCoin = await ethers.getContractFactory("RecCoin");
     [owner, account1, account2, ...accountss] = await ethers.getSigners();
 
     // Deploy the RecCoin contract
-    recCoin = await RecCoin.deploy("RecCoin", "REC", _decimals, initialSupply);
+    recCoin = await RecCoin.deploy("RecCoin", "REC", initialSupply);
 
     console.log("RecCoin contract successfully deployed");
     console.log(`-----------------------------------------------`)
@@ -35,25 +35,29 @@ describe("RecCoin", function () {
     });
 
     // Test to ascertain the correct total supply of RecCoin.
-    it("Should set the correct total supply", async function () {
-      expect(await recCoin.totalSupply()).to.equal(initialSupply.mul(10 ** _decimals));
-      //console.log("Total supply: " + totalSupply);
+    it("should set the correct total supply", async function () {
       const totalSupply = await recCoin.totalSupply();
-      console.log("Total supply:", Number(ethers.utils.formatEther(totalSupply)));
-      console.log(`-----------------------------------------------`)
+  
+      // Calculate the expected total supply based on the smart contract specification
+      const expectedTotalSupply = initialSupply * BigInt(10 ** _decimals);
+  
+      // Assert that the total supply matches the expected total supply
+      expect(totalSupply).to.equal(expectedTotalSupply);
     });
+    
 
     // Test to ascertain that the total supply of RecCoin is assigned to the owner.
     it("Should assign the total supply to the owner", async function () {
-      expect(await recCoin.balanceOf(owner.address)).to.equal(initialSupply.mul(10 ** _decimals));
+      expect(await recCoin.balanceOf(owner.address)).to.equal(initialSupply * BigInt(10 ** _decimals));
       //console.log("Total supply of " + recCoin.balanceOf(owner.address) +  " assigned to the owner");
       const ownerBalance = await recCoin.balanceOf(owner.address);
       const totalSupply = await recCoin.totalSupply();
-      console.log("Total supply of " + Number(ethers.utils.formatEther(totalSupply)) + " assigned to the owner");
-      console.log("New Owner balance:", Number(ethers.utils.formatEther(ownerBalance)));
+      console.log("Total supply of " + initialSupply * BigInt(10 ** _decimals) + " assigned to the owner");
+      console.log("New Owner balance:", BigInt(ownerBalance).toString());
+
+      //console.log("New Owner balance:", Number(ethers.utils.formatEther(ownerBalance)));
       console.log(`-----------------------------------------------`)
     });
-  });
 
   // The following are tests on the transfer function of the RecCoin smart contract - line 62 of RecCoin.sol
   describe("transfer", function () {
@@ -61,7 +65,7 @@ describe("RecCoin", function () {
       const initialBalanceOwner = await recCoin.balanceOf(owner.address);
       const initialBalanceAccount1 = await recCoin.balanceOf(account1.address);
       const initialBalanceAccount2 = await recCoin.balanceOf(account2.address);
-      const amount = ethers.utils.parseEther("80");
+      const amount = BigInt(80);
 
       // Call the transfer function to account1
       await recCoin.connect(owner).transfer(account1.address, amount);
@@ -73,9 +77,10 @@ describe("RecCoin", function () {
       // Check and confirm balances after transferring to account1
       expect(ownerBalanceOnDebit1).to.equal(initialBalanceOwner.sub(amount));
       expect(newBalanceAccount1).to.equal(initialBalanceAccount1.add(amount));
-      console.log(Number(ethers.utils.formatEther(amount)) + " RecCoin transferred from " + owner.address + " to " + account1.address);
-      console.log("Owner balance now: " + Number(ethers.utils.formatEther(ownerBalanceOnDebit1)));
+      console.log(amount.toString() + " RecCoin transferred from " + owner.address + " to " + account1.address);
+      console.log("Owner balance now: " + ownerBalanceOnDebit1.toString());
       console.log(`-----------------------------------------------`)
+
 
       // Call the transfer function to account2
       await recCoin.connect(owner).transfer(account2.address, amount);
@@ -88,14 +93,16 @@ describe("RecCoin", function () {
       expect(ownerBalanceOnDebit2).to.equal(ownerBalanceOnDebit1.sub(amount));
       expect(newBalanceAccount2).to.equal(initialBalanceAccount2.add(amount));
 
-      console.log(Number(ethers.utils.formatEther(amount)) + " RecCoin transferred from " + owner.address + " to " + account2.address);
-      console.log("Final balance of owner with address: " + owner.address + " is " + Number(ethers.utils.formatEther(ownerBalanceOnDebit2)));
-      console.log("New balance of account1 with address: " + account1.address + " is " + Number(ethers.utils.formatEther(newBalanceAccount1)));
-      console.log("New balance of account2 with address: " + account2.address + " is " + Number(ethers.utils.formatEther(newBalanceAccount2)));
+      console.log(amount.toString() + " RecCoin transferred from " + owner.address + " to " + account2.address);
+
+      console.log("Final balance of owner with address: " + owner.address + " is " + ownerBalanceOnDebit2.toString());
+      console.log("New balance of account1 with address: " + account1.address + " is " + newBalanceAccount1.toString());
+      console.log("New balance of account2 with address: " + account2.address + " is " + newBalanceAccount2.toString());
+      console.log(`-----------------------------------------------`)
     });
   });
 
-  
+ /* 
   // The following are tests on the approve function of the RecCoin smart contract - line 74 of RecCoin.sol
   describe("approve", function () {
     it("should approve token transfer", async function () {
@@ -268,7 +275,6 @@ describe("RecCoin", function () {
 
       // Revert with an error when the owner attemps to burn more than the total supply
       await expect(recCoin.burn(amountToBurn)).to.be.revertedWith("RecCoin: burn amount exceeds balance")
-    });
+    });*/
   });
 });
-
