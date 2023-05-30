@@ -531,7 +531,7 @@ contract Recycle is Ownable {
         uint256 _transactionId
     ) public transactionApproved(_transactionId) returns (bool success) {
         // Implement your code here 
-        ​require(!locked);  // prevents reentrancy attacks
+        ​require(!locked);  // prevents reentrancy attack
         ​locked = true;
         require(
             transactions[_transactionId].isApproved,
