@@ -49,13 +49,12 @@ describe("RecCoin", function () {
     // Test to ascertain that the total supply of RecCoin is assigned to the owner.
     it("Should assign the total supply to the owner", async function () {
       expect(await recCoin.balanceOf(owner.address)).to.equal(initialSupply * BigInt(10 ** _decimals));
-      //console.log("Total supply of " + recCoin.balanceOf(owner.address) +  " assigned to the owner");
+      console.log("Total supply of " + recCoin.balanceOf(owner.address) +  " assigned to the owner");
       const ownerBalance = await recCoin.balanceOf(owner.address);
       const totalSupply = await recCoin.totalSupply();
       console.log("Total supply of " + initialSupply * BigInt(10 ** _decimals) + " assigned to the owner");
       console.log("New Owner balance:", BigInt(ownerBalance).toString());
 
-      //console.log("New Owner balance:", Number(ethers.utils.formatEther(ownerBalance)));
       console.log(`-----------------------------------------------`)
     });
 
@@ -65,7 +64,8 @@ describe("RecCoin", function () {
       const initialBalanceOwner = await recCoin.balanceOf(owner.address);
       const initialBalanceAccount1 = await recCoin.balanceOf(account1.address);
       const initialBalanceAccount2 = await recCoin.balanceOf(account2.address);
-      const amount = BigInt(80);
+      //const amount = BigInt(80);
+      const amount = 80;
 
       // Call the transfer function to account1
       await recCoin.connect(owner).transfer(account1.address, amount);
@@ -98,11 +98,11 @@ describe("RecCoin", function () {
       console.log("Final balance of owner with address: " + owner.address + " is " + ownerBalanceOnDebit2.toString());
       console.log("New balance of account1 with address: " + account1.address + " is " + newBalanceAccount1.toString());
       console.log("New balance of account2 with address: " + account2.address + " is " + newBalanceAccount2.toString());
-      console.log(`-----------------------------------------------`)
+      console.log(`-----------------------------------------------`);
     });
   });
 
- /* 
+  
   // The following are tests on the approve function of the RecCoin smart contract - line 74 of RecCoin.sol
   describe("approve", function () {
     it("should approve token transfer", async function () {
@@ -191,7 +191,7 @@ describe("RecCoin", function () {
     });
   });
 
-
+/*
   // This tests the mint function of the Recoin smart contract - line 98 of Recoin.sol
   describe("mint", function () {
     it("should mint tokens to the specified account", async function () {
