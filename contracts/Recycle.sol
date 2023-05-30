@@ -233,7 +233,7 @@ contract Recycle is Ownable {
      */
     function setRecCoinAddress(address addressRec) external { //ensure to use camelcase naming on param
         require(addressRec != address(0x0)); //ensures address is not 0
-        addressRec = addressRec;
+        addressRec = addressRec; //reasigning the value
     }
 
 
