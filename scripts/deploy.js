@@ -18,8 +18,9 @@ async function main() {
   console.log("Deploying the RecCoin contract with the account:", deployer.address);
   // Set up the RecCoin contract factory
   const RecCoin = await ethers.getContractFactory("RecCoin");
+  const initialSupply = ethers.utils.parseEther("1000000");
   // Deploy the RecCoin contract
-  const recCoin = await RecCoin.deploy("RecCoin", "REC", 0, ethers.utils.parseEther("1000"));
+  const recCoin = await RecCoin.deploy("RecCoin", "REC", initialSupply);
   // display success and address
   console.log("RecCoin contract deployed to address:", recCoin.address);
 
