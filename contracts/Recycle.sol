@@ -525,10 +525,14 @@ contract Recycle is Ownable {
      * @param _transactionId The ID of the completed transaction.
      * @return success A boolean indicating if the payment was successful.
      */
+
+    bool internal locked = false;
     function payPicker(
         uint256 _transactionId
     ) public transactionApproved(_transactionId) returns (bool success) {
-        // Implement your code here
+        // Implement your code here 
+        ​require(!locked);  // prevents reentrancy attacks
+        ​locked = true;
         require(
             transactions[_transactionId].isApproved,
             "Transaction does not exist"
@@ -538,6 +542,11 @@ contract Recycle is Ownable {
         uint256 amount = transactions[_transactionId].weight *
             transactions[_transactionId].price;
         RecCoin recCoin = RecCoin(addressRec);
+
+        //  prevent reentrant calls from modifying the state again.
+        transactions[_transactionId].weight = 0;
+
+
         recCoin.transfer(_pickerAddress, amount);
         emit PickerPaid(msg.sender, _pickerAddress, amount);
         return true;
