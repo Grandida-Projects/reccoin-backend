@@ -226,6 +226,18 @@ contract Recycle is Ownable {
 
     // ================================================== FUNCTIONS ================================================== //
 
+
+    /**
+     * @dev Function to set address of RecCoin contract
+     * @param addressRec The address of the RecCoin contract
+     */
+    function setRecCoinAddress(address addressRec) external { //ensure to use camelcase naming on param
+        require(addressRec != address(0x0)); //ensures address is not 0
+        addressRec = addressRec; //reasigning the value
+    }
+
+
+
     /**
      * @dev Registers a new company.
      * @param _name The name of the company.
@@ -511,14 +523,7 @@ contract Recycle is Ownable {
         return true;
     }
 
-    /**
-     * @dev Function to set address of RecCoin contract
-     * @param _addressRec The address of the RecCoin contract
-     */
-    function setRecCoinAddress(address _addressRec) external {
-        require(_addressRec != address(0x0));
-        addressRec = _addressRec;
-    }
+
 
     /**
      * @dev Pays a picker for a completed transaction.
