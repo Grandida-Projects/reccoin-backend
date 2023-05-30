@@ -543,9 +543,6 @@ contract Recycle is Ownable {
             transactions[_transactionId].price;
         RecCoin recCoin = RecCoin(addressRec);
 
-        //  prevent reentrant calls from modifying the state again.
-        transactions[_transactionId].weight = 0;
-
 
         recCoin.transfer(_pickerAddress, amount);
         emit PickerPaid(msg.sender, _pickerAddress, amount);
