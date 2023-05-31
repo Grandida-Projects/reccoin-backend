@@ -386,4 +386,23 @@ describe("Recycle", function () {
     });
   });
 
+  // The following is a test on the updatePickerEmail function of the Recycle smart contract
+  describe("updatePickerEmail", function () {
+    it("should update picker email", async function () {
+      // Register a new picker
+      const pickerName = "John";
+      const pickerEmail = "charles@gmail.com";
+      await recycle.connect(picker).registerPicker(pickerName, pickerEmail);
+
+    //Update the picker email
+      const newEmail = "ebuka@example.com"
+      await recycle.connect(picker).updatePickerEmail(newEmail);
+
+      // Ascertain that picker email is updated correctly
+      const registeredPicker = await recycle.pickers(picker.address);
+      expect(registeredPicker.email).to.equal(newEmail);
+      console.log("Updated picker email: ", registeredPicker.email);
+    }); 
+  }) 
+
 });
