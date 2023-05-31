@@ -190,6 +190,44 @@ describe("RecCoin", function () {
       );
     });
   });
+  
+  // The following are tests on the mint function of the RecCoin smart contract - line 109 of RecCoin.sol
+  describe("mint", function () {
+    it("should mint tokens and update the total supply and balance of the recipient", async function () {
+      const recipient = account1.address;
+      const amountToMint = ethers.BigNumber.from(500);
+  
+      // Get the initial total supply and balance of the recipient
+      const initialTotalSupply = await recCoin.totalSupply();
+      const initialRecipientBalance = await recCoin.balanceOf(recipient);
+  
+      // Mint tokens to the recipient
+      await recCoin.mint(recipient, amountToMint);
+  
+      // Get the final total supply and balance of the recipient
+      const finalTotalSupply = await recCoin.totalSupply();
+      const finalRecipientBalance = await recCoin.balanceOf(recipient);
+  
+      // Assert that the total supply and recipient balance have been updated correctly
+      expect(finalTotalSupply).to.equal(initialTotalSupply.add(amountToMint));
+      expect(finalRecipientBalance).to.equal(initialRecipientBalance.add(amountToMint));
+  
+      // Log the minting details for verification
+      console.log(amountToMint.toString() + " RecCoin minted to " + recipient);
+      console.log("New total supply:", finalTotalSupply.toString());
+      console.log("New balance of recipient:", finalRecipientBalance.toString());
+      console.log("-----------------------------------------------");
+    });
+  
+    it("should revert if minting to the zero address", async function () {
+      const zeroAddress = ethers.constants.AddressZero;
+      const amountToMint = ethers.BigNumber.from(500);
+  
+      // Verify that minting to the zero address reverts with the expected error message
+      await expect(recCoin.mint(zeroAddress, amountToMint)).to.be.revertedWith("RecCoin: mint to the zero address");
+    });
+  });
+  
 
 /*
   // This tests the mint function of the Recoin smart contract - line 98 of Recoin.sol
