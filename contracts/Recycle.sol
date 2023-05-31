@@ -33,7 +33,7 @@ contract Recycle is Ownable {
 
     constructor(address _reccoinAddress) {
         totalTransactions = 0;
-        _reccoinAddress = reccoinAddress;
+        reccoinAddress = _reccoinAddress;
 
     }
 
