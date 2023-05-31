@@ -528,13 +528,12 @@ contract Recycle is Ownable {
     /**
      * @dev Pays a picker for a completed transaction.
      * @param _transactionId The ID of the completed transaction.
-     * @return success A boolean indicating if the payment was successful.
+     * @return bool A boolean indicating if the payment was successful.
      */
-     
+
     function payPicker(
         uint256 _transactionId
-    ) public transactionApproved(_transactionId) returns (bool success) {
-  
+    ) public transactionApproved(_transactionId) returns (bool) {
         require(
             transactions[_transactionId].isApproved,
             "Transaction does not exist"
@@ -545,7 +544,8 @@ contract Recycle is Ownable {
             transactions[_transactionId].price;
         RecCoin recCoin = RecCoin(addressRec);
 
-        recCoin.transfer(_pickerAddress, amount);
+        bool transferSuccess = recCoin.transfer(_pickerAddress, amount);
+        require(transferSuccess, "RecCoin: transfer failed");
         emit PickerPaid(msg.sender, _pickerAddress, amount);
         return true;
     }
