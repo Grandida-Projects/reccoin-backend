@@ -335,4 +335,55 @@ describe("Recycle", function () {
     });
   });
 
+  // The following are tests on the updateCompanyMaxPricePerKg function of the Recycle smart contract - line 352 of Recycle.sol
+  describe("updateCompanyMaxPricePerKg", function () {
+    it("should update the maximum price per kg for a company", async function () {
+      // Register a new company
+      const companyName = "Test Company";
+      const minWeightRequirement = 100;
+      const initialMaxPricePerKg = 10;
+      const updatedMaxPricePerKg = 15;
+      const isActive = true;
+  
+      await recycle.connect(company).registerCompany(
+        companyName,
+        minWeightRequirement,
+        initialMaxPricePerKg,
+        isActive
+      );
+  
+      // Call the updateCompanyMaxPricePerKg function to update the maximum price per kg
+      await recycle.connect(company).updateCompanyMaxPricePerKg(updatedMaxPricePerKg);
+  
+      // Retrieve the updated company details
+      const registeredCompany = await recycle.companies(company.address);
+  
+      // Assert that the maximum price per kg has been updated correctly
+      expect(registeredCompany.maxPricePerKg).to.equal(updatedMaxPricePerKg);
+      console.log("Updated maximum price per kg: ", registeredCompany.maxPricePerKg.toString());
+    });
+  
+    it("should revert if the maximum price per kg is set to zero", async function () {
+      // Register a new company
+      const companyName = "Test Company";
+      const minWeightRequirement = 100;
+      const initialMaxPricePerKg = 10;
+      const isActive = true;
+  
+      await recycle.connect(company).registerCompany(
+        companyName,
+        minWeightRequirement,
+        initialMaxPricePerKg,
+        isActive
+      );
+  
+      // Try to update the maximum price per kg to zero
+      const zeroMaxPricePerKg = 0;
+  
+      // Assert that updating the maximum price per kg to zero reverts with an error
+      await expect(recycle.connect(company).updateCompanyMaxPricePerKg(zeroMaxPricePerKg))
+        .to.be.revertedWith("Set price must be greater than zero");
+    });
+  });
+
 });
