@@ -66,8 +66,7 @@ describe("RecCoin", function () {
         const initialBalanceOwner = await recCoin.balanceOf(owner.address);
         const initialBalanceAccount1 = await recCoin.balanceOf(account1.address);
         const initialBalanceAccount2 = await recCoin.balanceOf(account2.address);
-        //const amount = BigInt(80);
-        const amount = 80;
+        const amount = ethers.BigNumber.from(80).mul(ethers.BigNumber.from("10").pow(_decimals));
 
         // Call the transfer function to account1
         await recCoin.connect(owner).transfer(account1.address, amount);
@@ -108,7 +107,8 @@ describe("RecCoin", function () {
     // The following are tests on the approve function of the RecCoin smart contract - line 74 of RecCoin.sol
     describe("approve", function () {
       it("should approve token transfer", async function () {
-        const amountToApprove = 80;
+        const amountToApprove = ethers.BigNumber.from(80).mul(ethers.BigNumber.from("10").pow(_decimals));
+        
         const spender = account1.address;
         const initialAllowance = await recCoin.allowance(owner.address, spender);
 
@@ -159,7 +159,7 @@ describe("RecCoin", function () {
       it("Should update allowance after transferFrom", async function () {
         const sender = owner.address;
         const recipient = account2.address;
-        const amount = ethers.utils.parseEther("50");
+        const amount = ethers.BigNumber.from(50).mul(ethers.BigNumber.from("10").pow(_decimals));
 
         // Set the allowance for account1 to spend tokens from owner's address using the approve function
         await recCoin.connect(owner).approve(account1.address, amount);
@@ -197,7 +197,7 @@ describe("RecCoin", function () {
     describe("mint", function () {
       it("should mint tokens and update the total supply and balance of the recipient", async function () {
         const recipient = account1.address;
-        const amountToMint = ethers.BigNumber.from(500);
+        const amountToMint = ethers.BigNumber.from(500).mul(ethers.BigNumber.from("10").pow(_decimals));
 
         // Get the initial total supply and balance of the recipient
         const initialTotalSupply = await recCoin.totalSupply();
@@ -223,7 +223,7 @@ describe("RecCoin", function () {
 
       it("should revert if minting to the zero address", async function () {
         const zeroAddress = ethers.constants.AddressZero;
-        const amountToMint = ethers.BigNumber.from(500);
+        const amountToMint = ethers.BigNumber.from(500).mul(ethers.BigNumber.from("10").pow(_decimals));
 
         // Verify that minting to the zero address reverts with the expected error message
         await expect(recCoin.mint(zeroAddress, amountToMint)).to.be.revertedWith("RecCoin: mint to the zero address");
@@ -235,7 +235,7 @@ describe("RecCoin", function () {
     describe("mint", function () {
       it("should mint tokens to the specified account", async function () {
         const initialSupply = await recCoin.totalSupply();
-        const amount = 100;
+        const amount = ethers.BigNumber.from(100).mul(ethers.BigNumber.from("10").pow(_decimals));
 
         await recCoin.connect(owner).mint(account1.address, amount);
 
@@ -250,7 +250,7 @@ describe("RecCoin", function () {
       });
 
       it("should revert when minting to the zero address", async function () {
-        const amount = 100;
+        const amount = ethers.BigNumber.from(100).mul(ethers.BigNumber.from("10").pow(_decimals));
 
         await expect(
           recCoin.connect(owner).mint(
@@ -261,7 +261,7 @@ describe("RecCoin", function () {
       });
 
       it("should update the balance of the specified account", async function () {
-        const amount = 100;
+        const amount = ethers.BigNumber.from(100).mul(ethers.BigNumber.from("10").pow(_decimals));
 
         await recCoin.connect(owner).mint(account1.address, amount);
 
@@ -274,7 +274,7 @@ describe("RecCoin", function () {
 
       it("should increase the total supply by the minted amount", async function () {
         const initialSupply = await recCoin.totalSupply();
-        const amount = 100;
+        const amount = ethers.BigNumber.from(100).mul(ethers.BigNumber.from("10").pow(_decimals));
 
         await recCoin.connect(owner).mint(account1.address, amount);
 
@@ -293,7 +293,7 @@ describe("RecCoin", function () {
     describe("burn", function () {
       it("Burns a specified number of tokens and removes it from total supply", async function () {
 
-        const amountToBurn = 80;
+        const amountToBurn = ethers.BigNumber.from(80).mul(ethers.BigNumber.from("10").pow(_decimals));
 
         // Total supply before burning some ReCoin
         const initialTotalSupply = await recCoin.totalSupply();
@@ -315,7 +315,7 @@ describe("RecCoin", function () {
 
       it("Ensure only the owner can burn ReCoin", async function () {
 
-        const amountToBurn = 80;
+        const amountToBurn = ethers.BigNumber.from(80).mul(ethers.BigNumber.from("10").pow(_decimals));
         // Connect account2 to the contract. This returns the instance of the contract...
         // ..with account2 connected
         const recoinAccount2 = await recCoin.connect(account2);
