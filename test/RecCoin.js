@@ -287,7 +287,7 @@ describe("RecCoin", function () {
     });
 
 
-/*
+
     // This tests the burn function of the RecCoin smart contract - line 114 of RecCoin.sol
 
     describe("burn", function () {
@@ -328,13 +328,15 @@ describe("RecCoin", function () {
         // Total supply before burning some ReCoin is 1000
         const initialTotalSupply = await recCoin.totalSupply();
 
-        const amountToBurn = 2000;
+        // attempt to burn 2000 tokens 
+        // format 2000 in appropriate decimal places. 
+        const amountToBurn = ethers.BigNumber.from("2000").mul(ethers.BigNumber.from("10").pow(_decimals));
 
         console.log("Total supply before burning some Recoin is ", initialTotalSupply.toString())
 
         // Revert with an error when the owner attemps to burn more than the total supply
         await expect(recCoin.burn(amountToBurn)).to.be.revertedWith("RecCoin: burn amount exceeds balance")
       });
-    });*/
+    });
   });
 });
