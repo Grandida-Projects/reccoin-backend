@@ -390,8 +390,8 @@ contract Recycle is Ownable {
             bytes(pickers[msg.sender].name).length == 0,
             "Picker already registered"
         );
-        uint256[] memory empty;
-        Picker memory newPicker = Picker(_name, _email, 0, empty);
+        //uint256[] memory empty;
+        Picker memory newPicker = Picker(_name, _email, 0, new uint256[](0));
         pickers[msg.sender] = newPicker;
         pickerAddresses.push(msg.sender);
         emit PickerRegistered(msg.sender, _name, _email);
