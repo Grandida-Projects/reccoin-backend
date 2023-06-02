@@ -34,7 +34,6 @@ contract Recycle is Ownable {
     constructor(address _reccoinAddress) {
         totalTransactions = 0;
         reccoinAddress = _reccoinAddress;
-
     }
 
     struct Company {
@@ -116,7 +115,7 @@ contract Recycle is Ownable {
      */
     modifier transactionApproved(uint256 _transactionId) {
         // TODO: Improve function modularity and reduce dependencies for enhanced decoupling.
-        require(
+        require(bool, string)(
             transactions[_transactionId].isApproved == true,
             "Transaction does not exist"
         );
@@ -227,7 +226,6 @@ contract Recycle is Ownable {
     event PickerPaid(address sender, address recipient, uint256 amount);
 
     // ================================================== FUNCTIONS ================================================== //
-
 
     /**
      * @dev Registers a new company.
@@ -513,8 +511,6 @@ contract Recycle is Ownable {
         );
         return true;
     }
-
-
 
     /**
      * @dev Pays a picker for a completed transaction.
