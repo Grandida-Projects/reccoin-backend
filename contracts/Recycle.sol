@@ -114,7 +114,7 @@ contract Recycle is Ownable {
      */
     modifier transactionApproved(uint256 _transactionId) {
         // TODO: Improve function modularity and reduce dependencies for enhanced decoupling.
-        require(
+        require(bool, string)(
             transactions[_transactionId].isApproved == true,
             "Transaction does not exist"
         );
