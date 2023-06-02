@@ -23,7 +23,7 @@ contract Recycle is Ownable {
     using SafeMath for uint256;
     using Address for address;
 
-    address private addressRec;
+    address private reccoinAddress;
     address[] public companyAddresses;
     address[] public pickerAddresses;
     mapping(address => Company) public companies;
@@ -31,8 +31,10 @@ contract Recycle is Ownable {
     uint256 public totalTransactions;
     mapping(uint256 => Transaction) public transactions;
 
-    constructor() {
+    constructor(address _reccoinAddress) {
         totalTransactions = 0;
+        reccoinAddress = _reccoinAddress;
+
     }
 
     struct Company {
@@ -225,17 +227,6 @@ contract Recycle is Ownable {
     event PickerPaid(address sender, address recipient, uint256 amount);
 
     // ================================================== FUNCTIONS ================================================== //
-
-
-    /**
-     * @dev Function to set address of RecCoin contract
-     * @param addressRec The address of the RecCoin contract
-     */
-    function setRecCoinAddress(address addressRec) external { //ensure to use camelcase naming on param
-        require(addressRec != address(0x0)); //ensures address is not 0
-        addressRec = addressRec; //reasigning the value
-    }
-
 
 
     /**
@@ -542,7 +533,7 @@ contract Recycle is Ownable {
 
         uint256 amount = transactions[_transactionId].weight *
             transactions[_transactionId].price;
-        RecCoin recCoin = RecCoin(addressRec);
+        RecCoin recCoin = RecCoin(reccoinAddress);
 
         bool transferSuccess = recCoin.transfer(_pickerAddress, amount);
         require(transferSuccess, "RecCoin: transfer failed");
