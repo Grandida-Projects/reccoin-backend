@@ -32,8 +32,9 @@ contract Recycle is Ownable {
     mapping(uint256 => Transaction) public transactions;
 
     constructor(address _reccoinAddress) {
-        totalTransactions = 0;
+        require(_reccoinAddress != address(0), "Invalid RecCoin address");
         reccoinAddress = _reccoinAddress;
+        totalTransactions = 0;
     }
 
     struct Company {
@@ -115,7 +116,7 @@ contract Recycle is Ownable {
      */
     modifier transactionApproved(uint256 _transactionId) {
         // TODO: Improve function modularity and reduce dependencies for enhanced decoupling.
-        require(bool, string)(
+        require(
             transactions[_transactionId].isApproved == true,
             "Transaction does not exist"
         );
