@@ -32,9 +32,9 @@ contract Recycle is Ownable {
     mapping(uint256 => Transaction) public transactions;
 
     constructor(address _reccoinAddress) {
-        totalTransactions = 0;
+        require(_reccoinAddress != address(0), "Invalid RecCoin address");
         reccoinAddress = _reccoinAddress;
-
+        totalTransactions = 0;
     }
 
     struct Company {
@@ -227,7 +227,6 @@ contract Recycle is Ownable {
     event PickerPaid(address sender, address recipient, uint256 amount);
 
     // ================================================== FUNCTIONS ================================================== //
-
 
     /**
      * @dev Registers a new company.
@@ -513,8 +512,6 @@ contract Recycle is Ownable {
         );
         return true;
     }
-
-
 
     /**
      * @dev Pays a picker for a completed transaction.

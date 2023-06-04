@@ -21,6 +21,8 @@ async function main() {
   const initialSupply = ethers.utils.parseEther("1000000");
   // Deploy the RecCoin contract
   const recCoin = await RecCoin.deploy("RecCoin", "REC", initialSupply);
+
+  await recCoin.deployed();
   // display success and address
   console.log("RecCoin contract deployed to address:", recCoin.address);
 
@@ -28,9 +30,9 @@ async function main() {
   // Grab Recycle.sol
   console.log("Deploying contracts with the account:", deployer.address);  
   // Set up the Recycle contract factory
-  const Recycle = await ethers.getContractFactory("Recycle");  
-  // Deploy the Recycle contract
-  const recycle = await Recycle.deploy();  
+  const Recycle = await ethers.getContractFactory('Recycle');
+  const recycle = await Recycle.deploy(recCoin.address);
+  await recycle.deployed(); 
   console.log("Recycle contract deployed to address:", recycle.address);
   
 }
