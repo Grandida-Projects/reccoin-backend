@@ -1,11 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 
 // Import the interface for the ERC20 token standard.
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
-// Import the interface for ERC20 token metadata (name, symbol, decimals).
-import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
 // Import the SafeMath library for performing arithmetic operations with safety checks.
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
@@ -22,13 +19,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * It extends the ERC20 standard token contract from the OpenZeppelin library.
  */
 
-contract RecCoin is IERC20, IERC20Metadata, Ownable {
+contract RecCoin is IERC20, Ownable {
     using SafeMath for uint256;
     using Address for address;
 
     string public name; // The name of the token
     string public symbol; // The symbol of the token
-    uint8 public decimals = 18; // The number of decimals for token display
+    uint8 public constant decimals = 18; // The number of decimals for token display
     uint256 public totalSupply; // The total supply of the token
 
     mapping(address => uint256) public balanceOf; // Mapping to track the balanceOf of token holders
