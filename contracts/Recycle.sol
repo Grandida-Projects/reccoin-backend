@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.0;
 
 // Import the Ownable contract, which provides basic authorization control.
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -12,6 +12,8 @@ import "@openzeppelin/contracts/utils/Address.sol";
 
 // Import token smart contract from same directory.
 import "./RecCoin.sol";
+
+import "hardhat/console.sol";
 
 /**
  * @title Recycle
@@ -30,11 +32,15 @@ contract Recycle is Ownable {
     mapping(address => Picker) public pickers;
     uint256 public totalTransactions;
     mapping(uint256 => Transaction) public transactions;
+    bool private locked; // Boolean variable to track the reentrancy status of the contract.
 
     constructor(address _reccoinAddress) {
-        require(_reccoinAddress != address(0), "Invalid RecCoin address");
-        reccoinAddress = _reccoinAddress;
+        require(
+            _reccoinAddress != address(0),
+            "Recycle: Can't assign a zero address"
+        );
         totalTransactions = 0;
+        reccoinAddress = _reccoinAddress;
     }
 
     struct Company {
@@ -69,7 +75,7 @@ contract Recycle is Ownable {
         // TODO: Improve function modularity and reduce dependencies for enhanced decoupling.
         require(
             companies[msg.sender].maxPricePerKg != 0,
-            "Only a registered company can perform this action"
+            "Recycle: Only a registered company can perform this action"
         );
         _;
     }
@@ -80,7 +86,7 @@ contract Recycle is Ownable {
     modifier onlyActiveCompany() {
         require(
             companies[msg.sender].active,
-            "Only active companies can perform this action"
+            "Recycle: Only active companies can perform this action"
         );
         _;
     }
@@ -92,7 +98,7 @@ contract Recycle is Ownable {
         // TODO: Improve function modularity and reduce dependencies for enhanced decoupling.
         require(
             bytes(pickers[msg.sender].name).length > 0,
-            "Only a registered pickers can perform this action"
+            "Recycle: Only a registered pickers can perform this action"
         );
         _;
     }
@@ -105,7 +111,7 @@ contract Recycle is Ownable {
         // TODO: Improve function modularity and reduce dependencies for enhanced decoupling.
         require(
             transactions[_transactionId].price != 0,
-            "Transaction does not exist"
+            "Recycle: Transaction does not exist"
         );
         _;
     }
@@ -118,9 +124,19 @@ contract Recycle is Ownable {
         // TODO: Improve function modularity and reduce dependencies for enhanced decoupling.
         require(
             transactions[_transactionId].isApproved == true,
-            "Transaction does not exist"
+            "Recycle: Transaction does not exist"
         );
         _;
+    }
+
+    /**
+     * @dev Modifier to prevent reentrancy attacks by allowing a function to be called only when not already in progress.
+     */
+    modifier noReentrancy() {
+        require(!locked, "Recycle: Reentrant call");
+        locked = true;
+        _;
+        locked = false;
     }
 
     // ================================================== EVENTS ================================================== //
@@ -229,6 +245,13 @@ contract Recycle is Ownable {
     // ================================================== FUNCTIONS ================================================== //
 
     /**
+     * @dev Track the balanceOf of token holders
+     */
+    function balanceOf() public view returns (uint256) {
+        return RecCoin(reccoinAddress).balanceOf(msg.sender);
+    }
+
+    /**
      * @dev Registers a new company.
      * @param _name The name of the company.
      * @param _minWeightRequirement The minimum weight requirement for the company.
@@ -236,6 +259,7 @@ contract Recycle is Ownable {
      * @param _active The activity status of the company.
      * @return success A boolean indicating if the registration was successful.
      */
+
     function registerCompany(
         string memory _name,
         uint256 _minWeightRequirement,
@@ -246,13 +270,16 @@ contract Recycle is Ownable {
         uint256 nameLength = nameInBytes.length;
         require(
             companies[msg.sender].minWeightRequirement == 0,
-            "Sorry you can't register twice edit your info if you wish to"
+            "Recycle: Sorry you can't register twice edit your info if you wish to"
         );
-        require(nameLength != 0, "Please enter a company name");
-        require(_maxPricePerKg > 0, "set price must be greater than zero");
+        require(nameLength != 0, "Recycle: Please enter a company name");
+        require(
+            _maxPricePerKg > 0,
+            "Recycle: set price must be greater than zero"
+        );
         require(
             _minWeightRequirement > 0,
-            "Invalid minimum weight requirement"
+            "Recycle: Invalid minimum weight requirement"
         );
         Company memory newCompany = Company(
             _name,
@@ -276,6 +303,7 @@ contract Recycle is Ownable {
      * @dev Gets the count of registered companies.
      * @return count The count of registered companies.
      */
+
     function getRegisteredCompanyCount() public view returns (uint256 count) {
         return companyAddresses.length;
     }
@@ -288,6 +316,7 @@ contract Recycle is Ownable {
      * @param _active The new activity status of the company.
      * @return success A boolean indicating if the edit was successful.
      */
+
     function editCompany(
         string memory _name,
         uint256 _minWeightRequirement,
@@ -296,11 +325,14 @@ contract Recycle is Ownable {
     ) public onlyCompany returns (bool success) {
         bytes memory nameInBytes = bytes(_name);
         uint256 nameLength = nameInBytes.length;
-        require(nameLength != 0, "Please enter a company name");
-        require(_maxPricePerKg > 0, "set price must be greater than zero");
+        require(nameLength != 0, "Recycle: Please enter a company name");
+        require(
+            _maxPricePerKg > 0,
+            "Recycle: Set price must be greater than zero"
+        );
         require(
             _minWeightRequirement > 0,
-            "Invalid minimum weight requirement"
+            "Recycle: Invalid minimum weight requirement"
         );
         Company storage company = companies[msg.sender];
         company.name = _name;
@@ -321,8 +353,12 @@ contract Recycle is Ownable {
      * @dev Updates the name of the company for the calling address.
      * @param _name The new name to be set for the company.
      */
+
     function updateCompanyName(string memory _name) public onlyCompany {
-        require(bytes(_name).length != 0, "Please enter a company name");
+        require(
+            bytes(_name).length != 0,
+            "Recycle: Please enter a company name"
+        );
         Company storage company = companies[msg.sender];
         company.name = _name;
         emit CompanyNameUpdated(msg.sender, _name);
@@ -332,12 +368,13 @@ contract Recycle is Ownable {
      * @dev Updates the minimum weight requirement of the company for the calling address.
      * @param _minWeightRequirement The new minimum weight requirement to be set for the company.
      */
+
     function updateCompanyMinWeightRequirement(
         uint256 _minWeightRequirement
     ) public onlyCompany {
         require(
             _minWeightRequirement > 0,
-            "Invalid minimum weight requirement"
+            "Recycle: Invalid minimum weight requirement"
         );
         Company storage company = companies[msg.sender];
         company.minWeightRequirement = _minWeightRequirement;
@@ -351,10 +388,14 @@ contract Recycle is Ownable {
      * @dev Updates the maximum price per kilogram of the company for the calling address.
      * @param _maxPricePerKg The new maximum price per kilogram to be set for the company.
      */
+
     function updateCompanyMaxPricePerKg(
         uint256 _maxPricePerKg
     ) public onlyCompany {
-        require(_maxPricePerKg > 0, "Set price must be greater than zero");
+        require(
+            _maxPricePerKg > 0,
+            "Recycle: Set price must be greater than zero"
+        );
         Company storage company = companies[msg.sender];
         company.maxPricePerKg = _maxPricePerKg;
         emit CompanyMaxPricePerKgUpdated(msg.sender, _maxPricePerKg);
@@ -364,6 +405,7 @@ contract Recycle is Ownable {
      * @dev Updates the active status of the company for the calling address.
      * @param _active The new active status to be set for the company.
      */
+
     function updateCompanyActiveStatus(bool _active) public onlyCompany {
         Company storage company = companies[msg.sender];
         company.active = _active;
@@ -376,20 +418,23 @@ contract Recycle is Ownable {
      * @param _email The email address of the picker.
      * @return success A boolean indicating if the registration was successful.
      */
+
     function registerPicker(
         string memory _name,
         string memory _email
     ) public returns (bool success) {
-        require(bytes(_name).length > 0, "Please provide a valid picker name.");
+        require(
+            bytes(_name).length > 0,
+            "Recycle: Please provide a valid picker name."
+        );
         require(
             bytes(_email).length > 0,
-            "Please provide a valid email address."
+            "Recycle: Please provide a valid email address."
         );
         require(
             bytes(pickers[msg.sender].name).length == 0,
-            "Picker already registered"
+            "Recycle: Picker already registered"
         );
-        //uint256[] memory empty;
         Picker memory newPicker = Picker(_name, _email, 0, new uint256[](0));
         pickers[msg.sender] = newPicker;
         pickerAddresses.push(msg.sender);
@@ -401,6 +446,7 @@ contract Recycle is Ownable {
      * @dev Gets content of the Picker struct since Solidity does not return arrays from structs inside mappings.
      * @return picker The struct containing the information about registered pickers.
      */
+
     function getPicker(address _address) public view returns (Picker memory) {
         return pickers[_address];
     }
@@ -409,6 +455,7 @@ contract Recycle is Ownable {
      * @dev Gets the count of registered pickers.
      * @return count The count of registered pickers.
      */
+
     function getRegisteredPickerCount() public view returns (uint256 count) {
         return pickerAddresses.length;
     }
@@ -419,14 +466,18 @@ contract Recycle is Ownable {
      * @param _email The new email address of the picker.
      * @return success A boolean indicating if the edit was successful.
      */
+
     function editPicker(
         string memory _name,
         string memory _email
     ) public onlyPicker returns (bool success) {
-        require(bytes(_name).length > 0, "Please provide a valid picker name.");
+        require(
+            bytes(_name).length > 0,
+            "Recycle: Please provide a valid picker name."
+        );
         require(
             bytes(_email).length > 0,
-            "Please provide a valid email address."
+            "Recycle: Please provide a valid email address."
         );
         Picker storage existingPicker = pickers[msg.sender];
         existingPicker.name = _name;
@@ -439,8 +490,12 @@ contract Recycle is Ownable {
      * @dev Updates the name of a specific picker.
      * @param _name The new name to be set for the picker.
      */
+
     function updatePickerName(string memory _name) public onlyPicker {
-        require(bytes(_name).length != 0, "Please enter a picker name");
+        require(
+            bytes(_name).length != 0,
+            "Recycle: Please enter a picker name"
+        );
         Picker storage picker = pickers[msg.sender];
         picker.name = _name;
         emit PickerNameUpdated(msg.sender, _name);
@@ -450,8 +505,12 @@ contract Recycle is Ownable {
      * @dev Updates the email of a specific picker.
      * @param _email The new email to be set for the picker.
      */
+
     function updatePickerEmail(string memory _email) public onlyPicker {
-        require(bytes(_email).length != 0, "Please enter a picker email");
+        require(
+            bytes(_email).length != 0,
+            "Recycle: Please enter a picker email"
+        );
         Picker storage picker = pickers[msg.sender];
         picker.email = _email;
         emit PickerEmailUpdated(msg.sender, _email);
@@ -463,13 +522,14 @@ contract Recycle is Ownable {
      * @param _weight The weight of the deposited plastic.
      * @return transactionId The ID of the transaction.
      */
+
     function depositPlastic(
         address _companyAddress,
         uint256 _weight
     ) public onlyPicker returns (uint256 transactionId) {
         require(
             companies[_companyAddress].active,
-            "This company is no longer active"
+            "Recycle: This company is no longer active"
         );
         Transaction memory newTransaction = Transaction(
             totalTransactions,
@@ -481,7 +541,10 @@ contract Recycle is Ownable {
         );
         transactions[totalTransactions] = newTransaction;
         Picker storage existingPicker = pickers[msg.sender];
-        existingPicker.weightDeposited += _weight;
+
+        existingPicker.weightDeposited = existingPicker.weightDeposited.add(
+            _weight
+        );
         existingPicker.transactions.push(totalTransactions);
         totalTransactions++;
         emit PlasticDeposited(msg.sender, _companyAddress, _weight);
@@ -493,17 +556,18 @@ contract Recycle is Ownable {
      * @param _transactionId The ID of the transaction to be validated.
      * @return success A boolean indicating if the validation was successful.
      */
+
     function validatePlastic(
         uint256 _transactionId
     ) public onlyActiveCompany returns (bool success) {
         require(
             transactions[_transactionId].companyAddress == msg.sender,
-            "This transaction belongs to another company"
+            "Recycle: This transaction belongs to another company"
         );
         require(
             transactions[_transactionId].weight >=
                 companies[msg.sender].minWeightRequirement,
-            "Weight of plastic deposited is below the minimum accepted weight of the company"
+            "Recycle: Weight of plastic deposited is below the minimum accepted weight of the company"
         );
         transactions[_transactionId].isApproved = true;
         emit PlasticValidated(
@@ -521,19 +585,31 @@ contract Recycle is Ownable {
 
     function payPicker(
         uint256 _transactionId
-    ) public transactionApproved(_transactionId) returns (bool) {
+    ) public transactionApproved(_transactionId) noReentrancy returns (bool) {
         require(
             transactions[_transactionId].isApproved,
-            "Transaction does not exist"
+            "Recycle: Transaction does not exist"
         );
+
         address _pickerAddress = transactions[_transactionId].pickerAddress;
 
-        uint256 amount = transactions[_transactionId].weight *
-            transactions[_transactionId].price;
+        uint256 amount = transactions[_transactionId].weight.mul(
+            transactions[_transactionId].price
+        );
+
         RecCoin recCoin = RecCoin(reccoinAddress);
 
-        bool transferSuccess = recCoin.transfer(_pickerAddress, amount);
-        require(transferSuccess, "RecCoin: transfer failed");
+        uint256 allowance = recCoin.allowance(msg.sender, address(this));
+        require(allowance >= amount, "Recycle: Insufficient allowance");
+
+        bool transferSuccess = recCoin.transferFrom(
+            msg.sender,
+            _pickerAddress,
+            amount
+        );
+
+        require(transferSuccess, "Recycle: transfer failed");
+
         emit PickerPaid(msg.sender, _pickerAddress, amount);
         return true;
     }

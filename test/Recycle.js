@@ -68,7 +68,7 @@ describe("Recycle", function () {
           maxPricePerKg,
           isActive
         )
-      ).to.be.revertedWith("Sorry you can't register twice edit your info if you wish to");
+      ).to.be.revertedWith("Recycle: Sorry you can't register twice edit your info if you wish to");
     });
   });
 
@@ -398,7 +398,7 @@ describe("Recycle", function () {
   
       // Assert that updating the maximum price per kg to zero reverts with an error
       await expect(recycle.connect(company).updateCompanyMaxPricePerKg(zeroMaxPricePerKg))
-        .to.be.revertedWith("Set price must be greater than zero");
+        .to.be.revertedWith("Recycle: Set price must be greater than zero");
     });
   });
 
