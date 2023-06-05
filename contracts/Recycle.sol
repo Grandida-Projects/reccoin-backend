@@ -25,7 +25,7 @@ contract Recycle is Ownable {
     using SafeMath for uint256;
     using Address for address;
 
-    address immutable reccoinAddress;
+    address private reccoinAddress;
     address[] public companyAddresses;
     address[] public pickerAddresses;
     mapping(address => Company) public companies;
