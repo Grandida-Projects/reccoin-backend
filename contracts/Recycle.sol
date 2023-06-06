@@ -25,7 +25,7 @@ contract Recycle is Ownable {
     using SafeMath for uint256;
     using Address for address;
 
-    address private reccoinAddress;
+    address immutable reccoinAddress;
     address[] public companyAddresses;
     address[] public pickerAddresses;
     mapping(address => Company) public companies;
@@ -601,6 +601,8 @@ contract Recycle is Ownable {
 
         uint256 allowance = recCoin.allowance(msg.sender, address(this));
         require(allowance >= amount, "Recycle: Insufficient allowance");
+
+        transactions[_transactionId].isApproved = false;
 
         bool transferSuccess = recCoin.transferFrom(
             msg.sender,
