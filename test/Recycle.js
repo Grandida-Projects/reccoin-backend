@@ -402,7 +402,7 @@ describe("Recycle", function () {
     });
   });
 
-  // The following is a test on the updatePickerEmail function of the Recycle smart contract
+  // The following is a test on the updatePickerEmail function of the Recycle smart contract line 509
   describe("updatePickerEmail", function () {
     it("should update picker email", async function () {
       // Register a new picker
@@ -421,7 +421,7 @@ describe("Recycle", function () {
     }); 
   }) 
 
-  //The following is a test on the depositPlastic function of the Recycle smart contract
+  //The following is a test on the depositPlastic function of the Recycle smart contract line 526
   describe("depositPlastic", function () {
     it("should deposit plastic successfully", async function () {
       // Register a company
