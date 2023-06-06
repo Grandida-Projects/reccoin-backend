@@ -421,4 +421,68 @@ describe("Recycle", function () {
     }); 
   }) 
 
+  //The following is a test on the depositPlastic function of the Recycle smart contract
+  describe("depositPlastic", function () {
+    it("should deposit plastic successfully", async function () {
+      // Register a company
+      const companyName = "Test Company";
+      const minWeightRequirement = 100;
+      const maxPricePerKg = 10;
+      const isActive = true;
+      await recycle.connect(company).registerCompany(
+        companyName,
+        minWeightRequirement,
+        maxPricePerKg,
+        isActive
+      );
+     
+      // Define the input parameters for the depositPlastic function
+      const companyAddress = company.address;
+      const weight = 100;
+      
+      // Register a new picker
+      const pickerName = "ebuka";
+      const pickerEmail = "ebuka@gmail.com";
+      await recycle.connect(picker).registerPicker(pickerName, pickerEmail);
+     
+      // Connect the picker signer to the contract
+      const connectedRecycle = recycle.connect(picker);
+     
+      // Call the depositPlastic function
+      const transactionId = await connectedRecycle.depositPlastic(
+        companyAddress,
+        weight,
+      );
+
+      // Retrieve the transaction details
+      const transaction = await recycle.transactions(0);
+    
+      // Assert the transaction details are correct
+      expect(transaction.companyAddress).to.equal(companyAddress);
+      expect(transaction.pickerAddress).to.equal(picker.address);
+      expect(transaction.weight).to.equal(weight);
+      expect(transaction.isApproved).to.equal(false);
+    
+      // Retrieve the picker details
+      const pickerDetails = await recycle.pickers(picker.address);
+      
+      // Assert the picker's weightDeposited is updated correctly
+      expect(pickerDetails.weightDeposited).to.equal(weight);
+
+      // Retrieve the total number of transactions
+      const totalTransactions = await recycle.totalTransactions();
+     // Assert the total number of transactions is updated correctly
+      expect(totalTransactions).to.equal(1);
+    
+      // Emit PlasticDeposited event
+      const events = await recycle.queryFilter("PlasticDeposited");
+      const eventArgs = events[0].args;
+    
+      // Assert the emitted event is correct
+      expect(eventArgs.pickerAddress).to.equal(picker.address);
+      expect(eventArgs.companyAddress).to.equal(companyAddress);
+      expect(eventArgs.weight).to.equal(weight);
+    });
+  });  
+
 });
