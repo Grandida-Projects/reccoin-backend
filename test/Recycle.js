@@ -485,4 +485,30 @@ describe("Recycle", function () {
     });
   });  
 
+  // This tests the  function validatePlastic the RecCoin smart contract - line 560 of RecCoin.sol
+  it("should reject invalid plastic transaction", async function () {
+    // Register a company
+    await recycle.connect(company).registerCompany("Company", 100, 10, true);
+  
+    // Get a picker registerd
+    await recycle.connect(picker).registerPicker("Picker", "picker@example.com");
+  
+    // picker deposits plastic
+    const weight = 50;
+    await recycle.connect(picker).depositPlastic(company.address, weight);
+  
+    // Attempt to get transaction ID
+    const pickerData = await recycle.getPicker(picker.address);
+    const transactionId = pickerData.transactions[0];
+  
+    // Attempt to validate the plastic transaction
+    await expect(recycle.connect(company).validatePlastic(transactionId))
+      .to.be.revertedWith("Recycle: Weight of plastic deposited is below the minimum accepted weight of the company");
+  
+    // Attempt to check if the transaction is still marked as not approved
+    const transaction = await recycle.transactions(transactionId);
+    expect(transaction.isApproved).to.equal(false);
+
+});
+
 });
