@@ -485,7 +485,7 @@ describe("Recycle", function () {
     });
   });  
 
-  // This tests the  function validatePlastic the RecCoin smart contract - line 560 of RecCoin.sol
+  // This tests the  function validatePlastic of the Recycle smart contract - line 560 of Recycle.sol
   it("should reject invalid plastic transaction", async function () {
     // Register a company
     await recycle.connect(company).registerCompany("Company", 100, 10, true);
