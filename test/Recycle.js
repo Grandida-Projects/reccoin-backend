@@ -402,6 +402,25 @@ describe("Recycle", function () {
     });
   });
 
+   // The following is a test on the updatePickerName function of the Recycle smart contract line 494
+   describe("updatePickerName", function () {
+    it("should update picker Name", async function () {
+      // Register a new picker
+      const pickerName = "John";
+      const pickerEmail = "charles@gmail.com";
+      await recycle.connect(picker).registerPicker(pickerName, pickerEmail);
+
+    //Update the picker name
+      const newName = "John2"
+      await recycle.connect(picker).updatePickerName(newName);
+
+      // Ascertain that picker name is updated correctly
+      const registeredPicker = await recycle.pickers(picker.address);
+      expect(registeredPicker.name).to.equal(newName);
+      console.log("Updated picker name: ", registeredPicker.name);
+    }); 
+  }) 
+
   // The following is a test on the updatePickerEmail function of the Recycle smart contract line 509
   describe("updatePickerEmail", function () {
     it("should update picker email", async function () {
