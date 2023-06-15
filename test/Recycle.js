@@ -402,6 +402,32 @@ describe("Recycle", function () {
     });
   });
 
+   // The following is a test on the updatePickerName function of the Recycle smart contract line 470
+   describe("editPicker", function () {
+    it("should edit a picker", async function () {
+      // Register a new picker
+      const pickerName = "Kobiko";
+      const pickerEmail = "kobiko@gmail.com";
+      await recycle.connect(picker).registerPicker(pickerName, pickerEmail);
+  
+      // Edit the picker
+      const newPickerName = "Updated Picker";
+      const newPickerEmail = "updatedpicker@gmail.com";
+      const editPickerTx = await recycle.connect(picker).editPicker(newPickerName, newPickerEmail);
+      await editPickerTx.wait();
+  
+      // Retrieve the updated picker details
+      const updatedPicker = await recycle.pickers(picker.address);
+  
+      // Check if the picker details are updated correctly
+      expect(updatedPicker.name).to.equal(newPickerName);
+      expect(updatedPicker.email).to.equal(newPickerEmail);
+  
+      // Check if the event is emitted with the correct values
+      expect(editPickerTx, "PickerEdited").to.emit(recycle, "PickerEdited").withArgs(picker.address, newPickerName, newPickerEmail);
+    });
+  });
+  
    // The following is a test on the updatePickerName function of the Recycle smart contract line 494
    describe("updatePickerName", function () {
     it("should update picker Name", async function () {
