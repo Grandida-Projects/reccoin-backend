@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
 // Import token smart contract from same directory.
-import "./RecCoin.sol";
+import "./Recylox.sol";
 
 import "hardhat/console.sol";
 
@@ -142,7 +142,7 @@ contract Recycle is Ownable {
     // ================================================== EVENTS ================================================== //
 
     /**
-     * @dev Emitted when a company's information is successfully registered on the RecCoin platform.
+     * @dev Emitted when a company's information is successfully registered on the Recylox platform.
      */
     event CompanyRegistered(
         address indexed companyAddress,
@@ -153,7 +153,7 @@ contract Recycle is Ownable {
     );
 
     /**
-     * @dev Emitted when a company's information is successfully edited on the RecCoin platform.
+     * @dev Emitted when a company's information is successfully edited on the Recylox platform.
      */
     event CompanyEdited(
         address indexed companyAddress,
@@ -164,12 +164,12 @@ contract Recycle is Ownable {
     );
 
     /**
-     * @dev Emitted when a company's name is successfully updated on the RecCoin platform.
+     * @dev Emitted when a company's name is successfully updated on the Recylox platform.
      */
     event CompanyNameUpdated(address indexed companyAddress, string newName);
 
     /**
-     * @dev Emitted when a company's minimum weight requirement is successfully updated on the RecCoin platform.
+     * @dev Emitted when a company's minimum weight requirement is successfully updated on the Recylox platform.
      */
     event CompanyMinWeightRequirementUpdated(
         address indexed companyAddress,
@@ -177,7 +177,7 @@ contract Recycle is Ownable {
     );
 
     /**
-     * @dev Emitted when a company's maximum price per kilogram is successfully updated on the RecCoin platform.
+     * @dev Emitted when a company's maximum price per kilogram is successfully updated on the Recylox platform.
      */
     event CompanyMaxPricePerKgUpdated(
         address indexed companyAddress,
@@ -185,7 +185,7 @@ contract Recycle is Ownable {
     );
 
     /**
-     * @dev Emitted when a company's active status is successfully updated on the RecCoin platform.
+     * @dev Emitted when a company's active status is successfully updated on the Recylox platform.
      */
     event CompanyActiveStatusUpdated(
         address indexed companyAddress,
@@ -193,7 +193,7 @@ contract Recycle is Ownable {
     );
 
     /**
-     * @dev Emitted when a picker is successfully registered on the RecCoin platform.
+     * @dev Emitted when a picker is successfully registered on the Recylox platform.
      */
     event PickerRegistered(
         address indexed pickerAddress,
@@ -202,7 +202,7 @@ contract Recycle is Ownable {
     );
 
     /**
-     * @dev Emitted when a picker's information is successfully edited on the RecCoin platform.
+     * @dev Emitted when a picker's information is successfully edited on the Recylox platform.
      */
     event PickerEdited(
         address indexed pickerAddress,
@@ -211,17 +211,17 @@ contract Recycle is Ownable {
     );
 
     /**
-     * @dev Emitted when a picker's name is successfully updated on the RecCoin platform.
+     * @dev Emitted when a picker's name is successfully updated on the Recylox platform.
      */
     event PickerNameUpdated(address indexed pickerAddress, string newName);
 
     /**
-     * @dev Emitted when a picker's email is successfully updated on the RecCoin platform.
+     * @dev Emitted when a picker's email is successfully updated on the Recylox platform.
      */
     event PickerEmailUpdated(address indexed pickerAddress, string newEmail);
 
     /**
-     * @dev Emitted when plastic is successfully deposited by a picker to a company on the RecCoin platform
+     * @dev Emitted when plastic is successfully deposited by a picker to a company on the Recylox platform
      */
     event PlasticDeposited(
         address indexed pickerAddress,
@@ -230,7 +230,7 @@ contract Recycle is Ownable {
     );
 
     /**
-     * @dev Emitted when plastic is successfully validated by a company on the RecCoin platform.
+     * @dev Emitted when plastic is successfully validated by a company on the Recylox platform.
      */
     event PlasticValidated(
         address indexed companyAddress,
@@ -238,7 +238,7 @@ contract Recycle is Ownable {
     );
 
     /**
-     * @dev Emitted when a payment is made to a picker on the RecCoin platform.
+     * @dev Emitted when a payment is made to a picker on the Recylox platform.
      */
     event PickerPaid(address sender, address recipient, uint256 amount);
 
@@ -248,7 +248,7 @@ contract Recycle is Ownable {
      * @dev Track the balanceOf of token holders
      */
     function balanceOf() public view returns (uint256) {
-        return RecCoin(reccoinAddress).balanceOf(msg.sender);
+        return Recylox(reccoinAddress).balanceOf(msg.sender);
     }
 
     /**
@@ -597,7 +597,7 @@ contract Recycle is Ownable {
             transactions[_transactionId].price
         );
 
-        RecCoin recCoin = RecCoin(reccoinAddress);
+        Recylox recCoin = Recylox(reccoinAddress);
 
         uint256 allowance = recCoin.allowance(msg.sender, address(this));
         require(allowance >= amount, "Recycle: Insufficient allowance");

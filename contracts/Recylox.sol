@@ -14,12 +14,12 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
- * @title RecCoin
- * @dev Implementation of the RecCoin ERC20 token contract.
+ * @title Recylox
+ * @dev Implementation of the Recylox ERC20 token contract.
  * It extends the ERC20 standard token contract from the OpenZeppelin library.
  */
 
-contract RecCoin is IERC20, Ownable {
+contract Recylox is IERC20, Ownable {
     using SafeMath for uint256;
     using Address for address;
 
@@ -41,7 +41,7 @@ contract RecCoin is IERC20, Ownable {
         string memory _symbol,
         uint256 initialSupply
     ) {
-        require(initialSupply > 0, "RecCoin: initial supply cannot be zero");
+        require(initialSupply > 0, "Recylox: initial supply cannot be zero");
 
         name = _name;
         symbol = _symbol;
@@ -91,7 +91,7 @@ contract RecCoin is IERC20, Ownable {
             msg.sender,
             allowance[sender][msg.sender].sub(
                 amount,
-                "RecCoin: transfer amount exceeds allowance"
+                "Recylox: transfer amount exceeds allowance"
             )
         );
         return true;
@@ -104,7 +104,7 @@ contract RecCoin is IERC20, Ownable {
      * @param amount The amount of tokens to mint.
      */
     function mint(address account, uint256 amount) public onlyOwner {
-        require(account != address(0), "RecCoin: mint to the zero address");
+        require(account != address(0), "Recylox: mint to the zero address");
 
         totalSupply = totalSupply.add(amount);
         balanceOf[account] = balanceOf[account].add(amount);
@@ -136,15 +136,15 @@ contract RecCoin is IERC20, Ownable {
     ) internal {
         require(
             sender != address(0),
-            "RecCoin: transfer from the zero address"
+            "Recylox: transfer from the zero address"
         );
         require(
             recipient != address(0),
-            "RecCoin: transfer to the zero address"
+            "Recylox: transfer to the zero address"
         );
         require(
             balanceOf[sender] >= amount,
-            "RecCoin: transfer amount exceeds balance"
+            "Recylox: transfer amount exceeds balance"
         );
 
         balanceOf[sender] = balanceOf[sender].sub(amount);
@@ -166,9 +166,9 @@ contract RecCoin is IERC20, Ownable {
     ) internal {
         require(
             tokenOwner != address(0),
-            "RecCoin: approve from the zero address"
+            "Recylox: approve from the zero address"
         );
-        require(spender != address(0), "RecCoin: approve to the zero address");
+        require(spender != address(0), "Recylox: approve to the zero address");
 
         allowance[tokenOwner][spender] = amount;
         emit Approval(tokenOwner, spender, amount);
@@ -181,10 +181,10 @@ contract RecCoin is IERC20, Ownable {
      */
 
     function _burn(address account, uint256 amount) internal {
-        require(account != address(0), "RecCoin: burn from the zero address");
+        require(account != address(0), "Recylox: burn from the zero address");
         require(
             balanceOf[account] >= amount,
-            "RecCoin: burn amount exceeds balance"
+            "Recylox: burn amount exceeds balance"
         );
 
         balanceOf[account] = balanceOf[account].sub(amount);

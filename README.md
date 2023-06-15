@@ -1,3 +1,3 @@
-# reccoin-backend
-Backend folder for the reccoin platform
+# recylox-backend
+Backend folder for the recylox platform
 <!-- Here is my change -->

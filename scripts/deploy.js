@@ -5,7 +5,7 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 
-// Deploy script for RecCoin smart contract on Hardhat
+// Deploy script for Recylox smart contract on Hardhat
 
 // Import Hardhat environment and Ethereum libraries
 const { ethers } = require("hardhat");
@@ -14,24 +14,24 @@ async function main() {
   // Set up Ethereum wallet
   const [deployer] = await ethers.getSigners();
 
-  // Grab RecCoin.sol
-  console.log("Deploying the RecCoin contract with the account:", deployer.address);
-  // Set up the RecCoin contract factory
-  const RecCoin = await ethers.getContractFactory("RecCoin");
+  // Grab Recylox.sol
+  console.log("Deploying the Recylox contract with the account:", deployer.address);
+  // Set up the Recylox contract factory
+  const Recylox = await ethers.getContractFactory("Recylox");
   const initialSupply = ethers.utils.parseEther("1000000");
-  // Deploy the RecCoin contract
-  const recCoin = await RecCoin.deploy("RecCoin", "REC", initialSupply);
+  // Deploy the Recylox contract
+  const recylox = await Recylox.deploy("Recylox", "REC", initialSupply);
 
-  await recCoin.deployed();
+  await recylox.deployed();
   // display success and address
-  console.log("RecCoin contract deployed to address:", recCoin.address);
+  console.log("Recylox contract deployed to address:", recylox.address);
 
  
   // Grab Recycle.sol
   console.log("Deploying contracts with the account:", deployer.address);  
   // Set up the Recycle contract factory
   const Recycle = await ethers.getContractFactory('Recycle');
-  const recycle = await Recycle.deploy(recCoin.address);
+  const recycle = await Recycle.deploy(recylox.address);
   await recycle.deployed(); 
   console.log("Recycle contract deployed to address:", recycle.address);
   

@@ -2,7 +2,7 @@ const { expect } = require("chai");
 
 describe("Recycle", function () {
   let recycle;
-  let recCoin;
+  let recylox;
   let company;
 
   beforeEach(async function () {
@@ -10,16 +10,16 @@ describe("Recycle", function () {
     const initialSupply = BigInt(1000);
     
     // Get the ContractFactory and Signers.
-    RecCoin = await ethers.getContractFactory("RecCoin");
+    Recylox = await ethers.getContractFactory("Recylox");
     [owner, company, secondCompany, thirdCompany, picker, picker2] = await ethers.getSigners();
 
-    // Deploy the RecCoin contract
-    recCoin = await RecCoin.deploy("RecCoin", "REC", initialSupply);
+    // Deploy the Recylox contract
+    recylox = await Recylox.deploy("Recylox", "REC", initialSupply);
 
-    console.log("RecCoin contract successfully deployed");
+    console.log("Recylox contract successfully deployed");
 
     const Recycle = await ethers.getContractFactory("Recycle");
-    recycle = await Recycle.deploy(recCoin.address);
+    recycle = await Recycle.deploy(recylox.address);
     await recycle.deployed();
     console.log("Recycle contract successfully deployed");
   });
