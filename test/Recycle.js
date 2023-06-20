@@ -576,11 +576,11 @@ describe("Recycle", function () {
       await connectedCompany.registerCompany("Company", 10, 10, true);
       // Make company a recepient
       const recipient = company.address;
-      // Want to mint 500 recyclox
-      const amountToMint = ethers.BigNumber.from(500).mul(ethers.BigNumber.from("10").pow(18));
+      // Want to transfer 500 recyclox from the deployer to the company
+      const amountToTransfer = ethers.BigNumber.from(500).mul(ethers.BigNumber.from("10").pow(18));
 
       // Transfer tokens from the owner of the contract to the company
-      await recylox.transfer(recipient, amountToMint);
+      await recylox.transfer(recipient, amountToTransfer);
 
       // Check company balance after transfer
       const companyRecycloxBalance = await connectedCompany.balanceOf();
@@ -604,7 +604,7 @@ describe("Recycle", function () {
       await connectedCompany.validatePlastic(transactionId)
 
       // Pay the picker
-      const ha = await connectedCompany.payPicker(transactionId);
+       await connectedCompany.payPicker(transactionId);
 
       //Check balance after payment
       const finalBalance = await connectedPicker.balanceOf();
