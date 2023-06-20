@@ -556,7 +556,7 @@ describe("Recycle", function () {
 
   });
 
-  // This tests the  function payPicker of the Recycle smart contract - line 586 of Recycle.sol
+  // This test the  function payPicker of the Recycle smart contract - line 586 of Recycle.sol
   describe("payPicker", function () {
     const amount = 10 * 100; // price per weight * deposited weight
 
@@ -568,7 +568,6 @@ describe("Recycle", function () {
       result = await transaction.wait();
     });
 
-    // This tests the  function payPicker of the Recycle smart contract - line 586 of Recycle.sol
     it("pay a picker", async function () {
       // ==== Transfer from deployer's account to the company's account
       // The company's contract instance
