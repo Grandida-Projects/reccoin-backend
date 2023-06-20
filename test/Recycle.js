@@ -8,7 +8,7 @@ describe("Recycle", function () {
   beforeEach(async function () {
     let _decimals = 18;
     const initialSupply = BigInt(1000);
-    
+
     // Get the ContractFactory and Signers.
     Recylox = await ethers.getContractFactory("Recylox");
     [owner, company, secondCompany, thirdCompany, picker, picker2] = await ethers.getSigners();
@@ -23,7 +23,7 @@ describe("Recycle", function () {
     await recycle.deployed();
     console.log("Recycle contract successfully deployed");
   });
-// register a company
+  // register a company
   describe("registerCompany", function () {
     it("should register a new company", async function () {
       const companyName = "Test-Company A";
@@ -127,8 +127,8 @@ describe("Recycle", function () {
 
   });
 
-   // The following are tests on the updateCompanyName function of the Recycle smart contract - line 332 of Recycle.sol
-   describe("updateCompanyName", function () {
+  // The following are tests on the updateCompanyName function of the Recycle smart contract - line 332 of Recycle.sol
+  describe("updateCompanyName", function () {
     it("should update company name", async function () {
       // Register a new company
       const companyName = "Grandida Company";
@@ -360,83 +360,83 @@ describe("Recycle", function () {
       const initialMaxPricePerKg = 10;
       const updatedMaxPricePerKg = 15;
       const isActive = true;
-  
+
       await recycle.connect(company).registerCompany(
         companyName,
         minWeightRequirement,
         initialMaxPricePerKg,
         isActive
       );
-  
+
       // Call the updateCompanyMaxPricePerKg function to update the maximum price per kg
       await recycle.connect(company).updateCompanyMaxPricePerKg(updatedMaxPricePerKg);
-  
+
       // Retrieve the updated company details
       const registeredCompany = await recycle.companies(company.address);
-  
+
       // Assert that the maximum price per kg has been updated correctly
       expect(registeredCompany.maxPricePerKg).to.equal(updatedMaxPricePerKg);
       console.log("Updated maximum price per kg: ", registeredCompany.maxPricePerKg.toString());
     });
-  
+
     it("should revert if the maximum price per kg is set to zero", async function () {
       // Register a new company
       const companyName = "Test Company";
       const minWeightRequirement = 100;
       const initialMaxPricePerKg = 10;
       const isActive = true;
-  
+
       await recycle.connect(company).registerCompany(
         companyName,
         minWeightRequirement,
         initialMaxPricePerKg,
         isActive
       );
-  
+
       // Try to update the maximum price per kg to zero
       const zeroMaxPricePerKg = 0;
-  
+
       // Assert that updating the maximum price per kg to zero reverts with an error
       await expect(recycle.connect(company).updateCompanyMaxPricePerKg(zeroMaxPricePerKg))
         .to.be.revertedWith("Recycle: Set price must be greater than zero");
     });
   });
 
-   // The following is a test on the updatePickerName function of the Recycle smart contract line 470
-   describe("editPicker", function () {
+  // The following is a test on the updatePickerName function of the Recycle smart contract line 470
+  describe("editPicker", function () {
     it("should edit a picker", async function () {
       // Register a new picker
       const pickerName = "Kobiko";
       const pickerEmail = "kobiko@gmail.com";
       await recycle.connect(picker).registerPicker(pickerName, pickerEmail);
-  
+
       // Edit the picker
       const newPickerName = "Updated Picker";
       const newPickerEmail = "updatedpicker@gmail.com";
       const editPickerTx = await recycle.connect(picker).editPicker(newPickerName, newPickerEmail);
       await editPickerTx.wait();
-  
+
       // Retrieve the updated picker details
       const updatedPicker = await recycle.pickers(picker.address);
-  
+
       // Check if the picker details are updated correctly
       expect(updatedPicker.name).to.equal(newPickerName);
       expect(updatedPicker.email).to.equal(newPickerEmail);
-  
+
       // Check if the event is emitted with the correct values
       expect(editPickerTx, "PickerEdited").to.emit(recycle, "PickerEdited").withArgs(picker.address, newPickerName, newPickerEmail);
     });
   });
-  
-   // The following is a test on the updatePickerName function of the Recycle smart contract line 494
-   describe("updatePickerName", function () {
+
+  // The following is a test on the updatePickerName function of the Recycle smart contract line 494
+  describe("updatePickerName", function () {
     it("should update picker Name", async function () {
       // Register a new picker
       const pickerName = "John";
       const pickerEmail = "charles@gmail.com";
       await recycle.connect(picker).registerPicker(pickerName, pickerEmail);
 
-    //Update the picker name
+      //Update the picker name
       const newName = "John2"
       await recycle.connect(picker).updatePickerName(newName);
 
@@ -444,8 +444,8 @@ describe("Recycle", function () {
       const registeredPicker = await recycle.pickers(picker.address);
       expect(registeredPicker.name).to.equal(newName);
       console.log("Updated picker name: ", registeredPicker.name);
-    }); 
-  }) 
+    });
+  })
 
   // The following is a test on the updatePickerEmail function of the Recycle smart contract line 509
   describe("updatePickerEmail", function () {
@@ -455,7 +455,7 @@ describe("Recycle", function () {
       const pickerEmail = "charles@gmail.com";
       await recycle.connect(picker).registerPicker(pickerName, pickerEmail);
 
-    //Update the picker email
+      //Update the picker email
       const newEmail = "ebuka@example.com"
       await recycle.connect(picker).updatePickerEmail(newEmail);
 
@@ -463,8 +463,8 @@ describe("Recycle", function () {
       const registeredPicker = await recycle.pickers(picker.address);
       expect(registeredPicker.email).to.equal(newEmail);
       console.log("Updated picker email: ", registeredPicker.email);
-    }); 
-  }) 
+    });
+  })
 
   //The following is a test on the depositPlastic function of the Recycle smart contract line 526
   describe("depositPlastic", function () {
@@ -480,19 +480,19 @@ describe("Recycle", function () {
         maxPricePerKg,
         isActive
       );
-     
+
       // Define the input parameters for the depositPlastic function
       const companyAddress = company.address;
       const weight = 100;
-      
+
       // Register a new picker
       const pickerName = "ebuka";
       const pickerEmail = "ebuka@gmail.com";
       await recycle.connect(picker).registerPicker(pickerName, pickerEmail);
-     
+
       // Connect the picker signer to the contract
       const connectedRecycle = recycle.connect(picker);
-     
+
       // Call the depositPlastic function
       const transactionId = await connectedRecycle.depositPlastic(
         companyAddress,
@@ -501,59 +501,119 @@ describe("Recycle", function () {
 
       // Retrieve the transaction details
       const transaction = await recycle.transactions(0);
-    
+
       // Assert the transaction details are correct
       expect(transaction.companyAddress).to.equal(companyAddress);
       expect(transaction.pickerAddress).to.equal(picker.address);
       expect(transaction.weight).to.equal(weight);
       expect(transaction.isApproved).to.equal(false);
-    
+
       // Retrieve the picker details
       const pickerDetails = await recycle.pickers(picker.address);
-      
+
       // Assert the picker's weightDeposited is updated correctly
       expect(pickerDetails.weightDeposited).to.equal(weight);
 
       // Retrieve the total number of transactions
       const totalTransactions = await recycle.totalTransactions();
-     // Assert the total number of transactions is updated correctly
+      // Assert the total number of transactions is updated correctly
       expect(totalTransactions).to.equal(1);
-    
+
       // Emit PlasticDeposited event
       const events = await recycle.queryFilter("PlasticDeposited");
       const eventArgs = events[0].args;
-    
+
       // Assert the emitted event is correct
       expect(eventArgs.pickerAddress).to.equal(picker.address);
       expect(eventArgs.companyAddress).to.equal(companyAddress);
       expect(eventArgs.weight).to.equal(weight);
     });
-  });  
+  });
 
   // This tests the  function validatePlastic of the Recycle smart contract - line 560 of Recycle.sol
   it("should reject invalid plastic transaction", async function () {
     // Register a company
     await recycle.connect(company).registerCompany("Company", 100, 10, true);
-  
+
     // Get a picker registerd
     await recycle.connect(picker).registerPicker("Picker", "picker@example.com");
-  
+
     // picker deposits plastic
     const weight = 50;
     await recycle.connect(picker).depositPlastic(company.address, weight);
-  
+
     // Attempt to get transaction ID
     const pickerData = await recycle.getPicker(picker.address);
     const transactionId = pickerData.transactions[0];
-  
+
     // Attempt to validate the plastic transaction
     await expect(recycle.connect(company).validatePlastic(transactionId))
       .to.be.revertedWith("Recycle: Weight of plastic deposited is below the minimum accepted weight of the company");
-  
+
     // Attempt to check if the transaction is still marked as not approved
     const transaction = await recycle.transactions(transactionId);
     expect(transaction.isApproved).to.equal(false);
 
-});
+  });
+
+  // This tests the  function payPicker of the Recycle smart contract - line 586 of Recycle.sol
+  describe("payPicker", function () {
+    const amount = 10 * 100; // price per weight * deposited weight
+
+    beforeEach(async () => {
+      // Approve recyle contract to transfer token
+      let transaction = await recylox
+        .connect(company)
+        .approve(recycle.address, amount);
+      result = await transaction.wait();
+    });
+
+    // This tests the  function payPicker of the Recycle smart contract - line 586 of Recycle.sol
+    it("pay a picker", async function () {
+      // ==== Transfer from deployer's account to the company's account
+      // The company's contract instance
+      const connectedCompany = await recycle.connect(company)
+      // Register a company
+      await connectedCompany.registerCompany("Company", 10, 10, true);
+      // Make company a recepient
+      const recipient = company.address;
+      // Want to mint 500 recyclox
+      const amountToMint = ethers.BigNumber.from(500).mul(ethers.BigNumber.from("10").pow(18));
+
+      // Transfer tokens from the owner of the contract to the company
+      await recylox.transfer(recipient, amountToMint);
+
+      // Check company balance after transfer
+      const companyRecycloxBalance = await connectedCompany.balanceOf();
+
+      // Get a picker registered
+      const connectedPicker = await recycle.connect(picker)
+      await connectedPicker.registerPicker("Picker", "josh@example.com");
+
+      const initialPickerBalance = await connectedPicker.balanceOf();
+
+      // picker deposits plastic
+      const weight = 100;
+      await connectedPicker.depositPlastic(company.address, weight);
+
+      // Get the transaction ID
+      const pickerData = await connectedPicker.getPicker(picker.address);
+
+      const transactionId = pickerData.transactions[0];
+
+      // Validate the plastic by the company
+      await connectedCompany.validatePlastic(transactionId)
+
+      // Pay the picker
+      const ha = await connectedCompany.payPicker(transactionId);
+
+      //Check balance after payment
+      const finalBalance = await connectedPicker.balanceOf();
+
+      // Check if the picker balance equals the amount that was transfered to the picker
+      expect(finalBalance).to.equal(amount);
+
+    });
+  })
 
 });
