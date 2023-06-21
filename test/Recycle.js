@@ -615,4 +615,19 @@ describe("Recycle", function () {
     });
   })
 
+    // This test the  function balanceOf  the Recycle smart contract - line 250 of Recycle.sol
+  it("should return the correct balance", async function () {
+    const initialBalance = 100; // Set the initial balance here
+
+    // Transfer some tokens to the address
+    await recylox.transfer(picker.address, initialBalance);
+
+    // Get the balance of the address
+    const balance = await recylox.balanceOf(picker.address);
+
+    // Assert that the balance is correct
+    expect(balance).to.equal(initialBalance);
+  });
+
 });
+
