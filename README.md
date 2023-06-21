@@ -3,6 +3,7 @@
 # Recylox Token Contract Documentation
 
 ## Table of Contents
+
 - [Token Information](#token-information)
 - [Balances and Allowances](#balances-and-allowances)
 - [Constructor](#constructor)
@@ -35,6 +36,7 @@
 6. [Security Considerations](#security-considerations)
 
 ## Token Information
+
 The Recylox token contract is an implementation of the ERC20 token standard in Solidity. It represents a token that can be used within the Ethereum ecosystem for various purposes. The contract defines the following token information:
 
 - `name`: The name of the token.
@@ -43,32 +45,38 @@ The Recylox token contract is an implementation of the ERC20 token standard in S
 - `totalSupply`: The total supply of the token.
 
 ## Balances and Allowances
+
 The contract maintains a mapping to track the balance of tokens for each token holder. Additionally, it includes a mapping to track the allowances granted by token holders to other addresses. The following functions are available to interact with balances and allowances:
 
 - `balanceOf(address account)`: Returns the balance of tokens for a specified account.
 - `allowance(address owner, address spender)`: Returns the allowance granted by the owner to the spender.
 
 ## Constructor
+
 The constructor function initializes the token contract with the provided initial supply of tokens. The initial supply is assigned to the contract deployer.
 
 ## Transfer Functions
+
 The contract provides functions to transfer tokens between accounts:
 
 - `transfer(address recipient, uint256 amount)`: Transfers tokens from the sender's account to the specified recipient.
 - `transferFrom(address sender, address recipient, uint256 amount)`: Transfers tokens from the sender's account to the specified recipient on behalf of the token owner.
 
 ## Approval Functions
+
 The contract includes an approval mechanism to allow token holders to grant allowances to other addresses:
 
 - `approve(address spender, uint256 amount)`: Sets the allowance for the spender to spend tokens on behalf of the owner.
 
 ## Minting and Burning
+
 The contract includes functions for minting and burning tokens. These functions can only be called by the contract owner:
 
 - `mint(address account, uint256 amount)`: Mints new tokens and adds them to the specified account.
 - `burn(address account, uint256 amount)`: Burns tokens from the specified account.
 
 ## Internal Functions
+
 The contract defines the following internal functions:
 
 - `_transfer(address sender, address recipient, uint256 amount)`: Internal function to transfer tokens from one account to another.
@@ -79,9 +87,8 @@ For a more detailed explanation of the Solidity language and how to use contract
 
 [1]: https://docs.soliditylang.org/
 
-
 #Section 2
-                                                                                                                                                                                              
+
 # Recycle Smart Contract Documentation
 
 ## Contract Overview<a name="contract-overview"></a>
@@ -94,7 +101,7 @@ The Recycle smart contract consists of the following components:
 
 ### State Variables<a name="state-variables"></a>
 
-- `reccoinAddress`: Immutable address representing the token smart contract address.
+- `recyloxAddress`: Immutable address representing the token smart contract address.
 - `companyAddresses`: Array of addresses representing registered company addresses.
 - `pickerAddresses`: Array of addresses representing registered picker addresses.
 - `companies`: Mapping storing information about registered companies.
@@ -126,7 +133,7 @@ The contract emits various events to provide information about important contrac
 
 The Recycle smart contract exposes
 
- the following public functions for external interaction:
+the following public functions for external interaction:
 
 ### `balanceOf()`<a name="balanceof"></a>
 
@@ -232,7 +239,7 @@ The Recycle smart contract also includes several internal functions that are use
 
 To use the Recycle smart contract,
 
- the following steps can be followed:
+the following steps can be followed:
 
 1. Deploy the smart contract on a compatible blockchain network.
 2. Companies and pickers can register using the `registerCompany()` and `registerPicker()` functions, respectively.

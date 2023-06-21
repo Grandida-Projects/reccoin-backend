@@ -1,7 +1,7 @@
 {
-  "name": "reccoin-backend",
+  "name": "recylox-backend",
   "version": "1.0.0",
-  "description": "reccoin-smartcontracts",
+  "description": "recylox-smartcontracts",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

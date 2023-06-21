@@ -11,7 +11,8 @@ describe("Recycle", function () {
 
     // Get the ContractFactory and Signers.
     Recylox = await ethers.getContractFactory("Recylox");
-    [owner, company, secondCompany, thirdCompany, picker, picker2] = await ethers.getSigners();
+    [owner, company, secondCompany, thirdCompany, picker, picker2] =
+      await ethers.getSigners();
 
     // Deploy the Recylox contract
     recylox = await Recylox.deploy("Recylox", "REC", initialSupply);
@@ -31,12 +32,14 @@ describe("Recycle", function () {
       const maxPricePerKg = 10;
       const isActive = true;
 
-      await recycle.connect(company).registerCompany(
-        companyName,
-        minWeightRequirement,
-        maxPricePerKg,
-        isActive
-      );
+      await recycle
+        .connect(company)
+        .registerCompany(
+          companyName,
+          minWeightRequirement,
+          maxPricePerKg,
+          isActive
+        );
 
       const registeredCompany = await recycle.companies(company.address);
       expect(registeredCompany.name).to.equal(companyName);
@@ -54,24 +57,29 @@ describe("Recycle", function () {
       const maxPricePerKg = 10;
       const isActive = true;
 
-      await recycle.connect(company).registerCompany(
-        companyName,
-        minWeightRequirement,
-        maxPricePerKg,
-        isActive
-      );
-
-      await expect(
-        recycle.connect(company).registerCompany(
+      await recycle
+        .connect(company)
+        .registerCompany(
           companyName,
           minWeightRequirement,
           maxPricePerKg,
           isActive
-        )
-      ).to.be.revertedWith("Recycle: Sorry you can't register twice edit your info if you wish to");
+        );
+
+      await expect(
+        recycle
+          .connect(company)
+          .registerCompany(
+            companyName,
+            minWeightRequirement,
+            maxPricePerKg,
+            isActive
+          )
+      ).to.be.revertedWith(
+        "Recycle: Sorry you can't register twice edit your info if you wish to"
+      );
     });
   });
-
 
   // The following are tests on the getRegisteredCompanyCount function of the Recycle smart contract - line 175 of Recycle.sol
   describe("getRegisteredCompanyCount", function () {
@@ -82,12 +90,14 @@ describe("Recycle", function () {
       const maxPricePerKg1 = 10;
       const isActive1 = true;
 
-      await recycle.connect(company).registerCompany(
-        companyName1,
-        minWeightRequirement1,
-        maxPricePerKg1,
-        isActive1
-      );
+      await recycle
+        .connect(company)
+        .registerCompany(
+          companyName1,
+          minWeightRequirement1,
+          maxPricePerKg1,
+          isActive1
+        );
 
       // Register a second company using a different signer
       const companyName2 = "Company 2";
@@ -95,12 +105,14 @@ describe("Recycle", function () {
       const maxPricePerKg2 = 20;
       const isActive2 = true;
 
-      await recycle.connect(secondCompany).registerCompany(
-        companyName2,
-        minWeightRequirement2,
-        maxPricePerKg2,
-        isActive2
-      );
+      await recycle
+        .connect(secondCompany)
+        .registerCompany(
+          companyName2,
+          minWeightRequirement2,
+          maxPricePerKg2,
+          isActive2
+        );
 
       // Register a third company using another different signer
       const companyName3 = "Company 3";
@@ -108,23 +120,27 @@ describe("Recycle", function () {
       const maxPricePerKg3 = 30;
       const isActive3 = true;
 
-      await recycle.connect(thirdCompany).registerCompany(
-        companyName3,
-        minWeightRequirement3,
-        maxPricePerKg3,
-        isActive3
-      );
+      await recycle
+        .connect(thirdCompany)
+        .registerCompany(
+          companyName3,
+          minWeightRequirement3,
+          maxPricePerKg3,
+          isActive3
+        );
 
       // Get the registered company count
       const registeredCompanyCount = await recycle.getRegisteredCompanyCount();
 
       // Log key details to the console
-      console.log("Registered Company Count:", registeredCompanyCount.toNumber());
+      console.log(
+        "Registered Company Count:",
+        registeredCompanyCount.toNumber()
+      );
 
       // Check if the count corresponds to what is expected.
       expect(registeredCompanyCount).to.equal(3);
     });
-
   });
 
   // The following are tests on the updateCompanyName function of the Recycle smart contract - line 332 of Recycle.sol
@@ -133,13 +149,10 @@ describe("Recycle", function () {
       // Register a new company
       const companyName = "Grandida Company";
 
-      // Register the company address on Reccoin
-      await recycle.connect(company).registerCompany(
-        companyName,
-        100,
-        10,
-        true
-      );
+      // Register the company address on Recylox
+      await recycle
+        .connect(company)
+        .registerCompany(companyName, 100, 10, true);
 
       // Update the company name
       const newName = "Grandida Testers Company";
@@ -152,7 +165,6 @@ describe("Recycle", function () {
     });
   });
 
-
   // The following are tests on the getRegisteredCompanyCount function of the Recycle smart contract - line 375 of Recycle.sol
   describe("updateCompanyActiveStatus", function () {
     it("should update the active status of a company", async function () {
@@ -162,12 +174,14 @@ describe("Recycle", function () {
       const maxPricePerKg = 10;
       const isActive = true;
 
-      await recycle.connect(company).registerCompany(
-        companyName,
-        minWeightRequirement,
-        maxPricePerKg,
-        isActive
-      );
+      await recycle
+        .connect(company)
+        .registerCompany(
+          companyName,
+          minWeightRequirement,
+          maxPricePerKg,
+          isActive
+        );
 
       // Update the active status of the company - First check
       const newActiveStatus = false;
@@ -176,16 +190,24 @@ describe("Recycle", function () {
       // Ascertain that the active status is updated correctly
       const updatedCompany = await recycle.companies(company.address);
       expect(updatedCompany.active).to.equal(newActiveStatus);
-      console.log("Updated company active status on first check: ", updatedCompany.active);
+      console.log(
+        "Updated company active status on first check: ",
+        updatedCompany.active
+      );
 
       // A counter-update of the active status of the company - Second check
       const newerActiveStatus = true;
-      await recycle.connect(company).updateCompanyActiveStatus(newerActiveStatus);
+      await recycle
+        .connect(company)
+        .updateCompanyActiveStatus(newerActiveStatus);
 
       // Ascertain that the active status is counter-updated correctly
       const updatedCompanyCheckTwo = await recycle.companies(company.address);
       expect(updatedCompanyCheckTwo.active).to.equal(newerActiveStatus);
-      console.log("Updated company active status on second check: ", updatedCompanyCheckTwo.active);
+      console.log(
+        "Updated company active status on second check: ",
+        updatedCompanyCheckTwo.active
+      );
     });
   });
 
@@ -198,7 +220,7 @@ describe("Recycle", function () {
       const maxPricePerKg = 10;
       const isActive = true;
       // Connect the company's account to the contract
-      const connectedcompany = await recycle.connect(company)
+      const connectedcompany = await recycle.connect(company);
       //Call the contract function
       const registerCompany = await connectedcompany.registerCompany(
         companyName,
@@ -207,7 +229,7 @@ describe("Recycle", function () {
         isActive
       );
 
-      await registerCompany.wait(1)
+      await registerCompany.wait(1);
 
       // Edit company, using new details
       const newCompanyName = "Test Edit Company";
@@ -220,18 +242,19 @@ describe("Recycle", function () {
         newCompanyName,
         newMinWeightRequirement,
         newMaxPricePerKg,
-        newIsActive)
+        newIsActive
+      );
 
-      const receipt = await editCompany.wait(1)
+      const receipt = await editCompany.wait(1);
 
       // Check if the function emits events with these values
-      expect(editCompany, 'CompanyEdited', {
+      expect(editCompany, "CompanyEdited", {
         arg1: newCompanyName,
         arg2: newMinWeightRequirement,
         arg3: newMaxPricePerKg,
-        arg4: newIsActive
+        arg4: newIsActive,
       });
-      //~~ You can also use receipt.events[0].args to check for events      
+      //~~ You can also use receipt.events[0].args to check for events
     });
   });
 
@@ -244,7 +267,7 @@ describe("Recycle", function () {
       const maxPricePerKg = 10;
       const isActive = true;
       // Connect the company's account to the contract
-      const connectedcompany = await recycle.connect(company)
+      const connectedcompany = await recycle.connect(company);
       //Call the contract function
       const registerCompany = await connectedcompany.registerCompany(
         companyName,
@@ -252,24 +275,26 @@ describe("Recycle", function () {
         maxPricePerKg,
         isActive
       );
-      await registerCompany.wait(1)
+      await registerCompany.wait(1);
 
       // Update the weight requirement to a new value
       const newMinWeightRequirement = 200;
 
       // Call the contract function
-      const updateWeight = await connectedcompany.updateCompanyMinWeightRequirement(
-        newMinWeightRequirement)
+      const updateWeight =
+        await connectedcompany.updateCompanyMinWeightRequirement(
+          newMinWeightRequirement
+        );
 
-      const receipt = await updateWeight.wait(1)
+      const receipt = await updateWeight.wait(1);
 
       // Check if the function emits events with these values
-      expect(updateWeight, 'CompanyMinWeightRequirementUpdated', {
+      expect(updateWeight, "CompanyMinWeightRequirementUpdated", {
         arg1: company.address,
-        arg2: newMinWeightRequirement
+        arg2: newMinWeightRequirement,
       });
 
-      //~~ You can also use receipt.events[0].args to check for events      
+      //~~ You can also use receipt.events[0].args to check for events
     });
   });
 
@@ -280,14 +305,14 @@ describe("Recycle", function () {
       const pickerName = "Kobiko";
       const pickerEmail = "kobiko@gmail.com";
       // Connect the picker's account to the contract
-      const connectedPicker = await recycle.connect(picker)
+      const connectedPicker = await recycle.connect(picker);
       //Call the contract function
       const registerPicker = await connectedPicker.registerPicker(
         pickerName,
         pickerEmail
       );
 
-      await registerPicker.wait(1)
+      await registerPicker.wait(1);
 
       // Ascertain the picker is registered correctly
       const registeredPicker = await recycle.pickers(picker.address);
@@ -304,14 +329,14 @@ describe("Recycle", function () {
       const pickerName = "Kobiko";
       const pickerEmail = "kobiko@gmail.com";
       // Connect the picker's account to the contract
-      const connectedPicker = await recycle.connect(picker)
+      const connectedPicker = await recycle.connect(picker);
       //Call the contract function
       const registerPicker = await connectedPicker.registerPicker(
         pickerName,
         pickerEmail
       );
 
-      await registerPicker.wait(1)
+      await registerPicker.wait(1);
 
       // Check if picker can be gotten from the function
       const gottenPicker = await recycle.getPicker(picker.address);
@@ -326,7 +351,7 @@ describe("Recycle", function () {
       const pickerName = "Kobiko";
       const pickerEmail = "kobiko@gmail.com";
       // Connect the picker's account to the contract
-      const connectedPicker = await recycle.connect(picker)
+      const connectedPicker = await recycle.connect(picker);
       //Call the contract function
       const registerPicker = await connectedPicker.registerPicker(
         pickerName,
@@ -337,7 +362,7 @@ describe("Recycle", function () {
       const picker2Name = "David Grass";
       const picker2Email = "grass@gmail.com";
       // Connect the picker's account to the contract
-      const connectedPicker2 = await recycle.connect(picker2)
+      const connectedPicker2 = await recycle.connect(picker2);
       //Call the contract function
       const registerPicker2 = await connectedPicker2.registerPicker(
         picker2Name,
@@ -361,22 +386,29 @@ describe("Recycle", function () {
       const updatedMaxPricePerKg = 15;
       const isActive = true;
 
-      await recycle.connect(company).registerCompany(
-        companyName,
-        minWeightRequirement,
-        initialMaxPricePerKg,
-        isActive
-      );
+      await recycle
+        .connect(company)
+        .registerCompany(
+          companyName,
+          minWeightRequirement,
+          initialMaxPricePerKg,
+          isActive
+        );
 
       // Call the updateCompanyMaxPricePerKg function to update the maximum price per kg
-      await recycle.connect(company).updateCompanyMaxPricePerKg(updatedMaxPricePerKg);
+      await recycle
+        .connect(company)
+        .updateCompanyMaxPricePerKg(updatedMaxPricePerKg);
 
       // Retrieve the updated company details
       const registeredCompany = await recycle.companies(company.address);
 
       // Assert that the maximum price per kg has been updated correctly
       expect(registeredCompany.maxPricePerKg).to.equal(updatedMaxPricePerKg);
-      console.log("Updated maximum price per kg: ", registeredCompany.maxPricePerKg.toString());
+      console.log(
+        "Updated maximum price per kg: ",
+        registeredCompany.maxPricePerKg.toString()
+      );
     });
 
     it("should revert if the maximum price per kg is set to zero", async function () {
@@ -386,19 +418,22 @@ describe("Recycle", function () {
       const initialMaxPricePerKg = 10;
       const isActive = true;
 
-      await recycle.connect(company).registerCompany(
-        companyName,
-        minWeightRequirement,
-        initialMaxPricePerKg,
-        isActive
-      );
+      await recycle
+        .connect(company)
+        .registerCompany(
+          companyName,
+          minWeightRequirement,
+          initialMaxPricePerKg,
+          isActive
+        );
 
       // Try to update the maximum price per kg to zero
       const zeroMaxPricePerKg = 0;
 
       // Assert that updating the maximum price per kg to zero reverts with an error
-      await expect(recycle.connect(company).updateCompanyMaxPricePerKg(zeroMaxPricePerKg))
-        .to.be.revertedWith("Recycle: Set price must be greater than zero");
+      await expect(
+        recycle.connect(company).updateCompanyMaxPricePerKg(zeroMaxPricePerKg)
+      ).to.be.revertedWith("Recycle: Set price must be greater than zero");
     });
   });
 
@@ -413,7 +448,9 @@ describe("Recycle", function () {
       // Edit the picker
       const newPickerName = "Updated Picker";
       const newPickerEmail = "updatedpicker@gmail.com";
-      const editPickerTx = await recycle.connect(picker).editPicker(newPickerName, newPickerEmail);
+      const editPickerTx = await recycle
+        .connect(picker)
+        .editPicker(newPickerName, newPickerEmail);
       await editPickerTx.wait();
 
       // Retrieve the updated picker details
@@ -424,7 +461,9 @@ describe("Recycle", function () {
       expect(updatedPicker.email).to.equal(newPickerEmail);
 
       // Check if the event is emitted with the correct values
-      expect(editPickerTx, "PickerEdited").to.emit(recycle, "PickerEdited").withArgs(picker.address, newPickerName, newPickerEmail);
+      expect(editPickerTx, "PickerEdited")
+        .to.emit(recycle, "PickerEdited")
+        .withArgs(picker.address, newPickerName, newPickerEmail);
     });
   });
 
@@ -437,7 +476,7 @@ describe("Recycle", function () {
       await recycle.connect(picker).registerPicker(pickerName, pickerEmail);
 
       //Update the picker name
-      const newName = "John2"
+      const newName = "John2";
       await recycle.connect(picker).updatePickerName(newName);
 
       // Ascertain that picker name is updated correctly
@@ -445,7 +484,7 @@ describe("Recycle", function () {
       expect(registeredPicker.name).to.equal(newName);
       console.log("Updated picker name: ", registeredPicker.name);
     });
-  })
+  });
 
   // The following is a test on the updatePickerEmail function of the Recycle smart contract line 509
   describe("updatePickerEmail", function () {
@@ -456,7 +495,7 @@ describe("Recycle", function () {
       await recycle.connect(picker).registerPicker(pickerName, pickerEmail);
 
       //Update the picker email
-      const newEmail = "ebuka@example.com"
+      const newEmail = "ebuka@example.com";
       await recycle.connect(picker).updatePickerEmail(newEmail);
 
       // Ascertain that picker email is updated correctly
@@ -464,7 +503,7 @@ describe("Recycle", function () {
       expect(registeredPicker.email).to.equal(newEmail);
       console.log("Updated picker email: ", registeredPicker.email);
     });
-  })
+  });
 
   //The following is a test on the depositPlastic function of the Recycle smart contract line 526
   describe("depositPlastic", function () {
@@ -474,12 +513,14 @@ describe("Recycle", function () {
       const minWeightRequirement = 100;
       const maxPricePerKg = 10;
       const isActive = true;
-      await recycle.connect(company).registerCompany(
-        companyName,
-        minWeightRequirement,
-        maxPricePerKg,
-        isActive
-      );
+      await recycle
+        .connect(company)
+        .registerCompany(
+          companyName,
+          minWeightRequirement,
+          maxPricePerKg,
+          isActive
+        );
 
       // Define the input parameters for the depositPlastic function
       const companyAddress = company.address;
@@ -496,7 +537,7 @@ describe("Recycle", function () {
       // Call the depositPlastic function
       const transactionId = await connectedRecycle.depositPlastic(
         companyAddress,
-        weight,
+        weight
       );
 
       // Retrieve the transaction details
@@ -536,7 +577,9 @@ describe("Recycle", function () {
     await recycle.connect(company).registerCompany("Company", 100, 10, true);
 
     // Get a picker registerd
-    await recycle.connect(picker).registerPicker("Picker", "picker@example.com");
+    await recycle
+      .connect(picker)
+      .registerPicker("Picker", "picker@example.com");
 
     // picker deposits plastic
     const weight = 50;
@@ -547,13 +590,15 @@ describe("Recycle", function () {
     const transactionId = pickerData.transactions[0];
 
     // Attempt to validate the plastic transaction
-    await expect(recycle.connect(company).validatePlastic(transactionId))
-      .to.be.revertedWith("Recycle: Weight of plastic deposited is below the minimum accepted weight of the company");
+    await expect(
+      recycle.connect(company).validatePlastic(transactionId)
+    ).to.be.revertedWith(
+      "Recycle: Weight of plastic deposited is below the minimum accepted weight of the company"
+    );
 
     // Attempt to check if the transaction is still marked as not approved
     const transaction = await recycle.transactions(transactionId);
     expect(transaction.isApproved).to.equal(false);
-
   });
 
   // This test the  function payPicker of the Recycle smart contract - line 586 of Recycle.sol
@@ -571,13 +616,15 @@ describe("Recycle", function () {
     it("pay a picker", async function () {
       // ==== Transfer from deployer's account to the company's account
       // The company's contract instance
-      const connectedCompany = await recycle.connect(company)
+      const connectedCompany = await recycle.connect(company);
       // Register a company
       await connectedCompany.registerCompany("Company", 10, 10, true);
       // Make company a recepient
       const recipient = company.address;
       // Want to transfer 500 recyclox from the deployer to the company
-      const amountToTransfer = ethers.BigNumber.from(500).mul(ethers.BigNumber.from("10").pow(18));
+      const amountToTransfer = ethers.BigNumber.from(500).mul(
+        ethers.BigNumber.from("10").pow(18)
+      );
 
       // Transfer tokens from the owner of the contract to the company
       await recylox.transfer(recipient, amountToTransfer);
@@ -586,7 +633,7 @@ describe("Recycle", function () {
       const companyRecycloxBalance = await connectedCompany.balanceOf();
 
       // Get a picker registered
-      const connectedPicker = await recycle.connect(picker)
+      const connectedPicker = await recycle.connect(picker);
       await connectedPicker.registerPicker("Picker", "josh@example.com");
 
       const initialPickerBalance = await connectedPicker.balanceOf();
@@ -601,21 +648,20 @@ describe("Recycle", function () {
       const transactionId = pickerData.transactions[0];
 
       // Validate the plastic by the company
-      await connectedCompany.validatePlastic(transactionId)
+      await connectedCompany.validatePlastic(transactionId);
 
       // Pay the picker
-       await connectedCompany.payPicker(transactionId);
+      await connectedCompany.payPicker(transactionId);
 
       //Check balance after payment
       const finalBalance = await connectedPicker.balanceOf();
 
       // Check if the picker balance equals the amount that was transfered to the picker
       expect(finalBalance).to.equal(amount);
-
     });
-  })
+  });
 
-    // This test the  function balanceOf  the Recycle smart contract - line 250 of Recycle.sol
+  // This test the  function balanceOf  the Recycle smart contract - line 250 of Recycle.sol
   it("should return the correct balance", async function () {
     const initialBalance = 100; // Set the initial balance here
 
@@ -628,6 +674,4 @@ describe("Recycle", function () {
     // Assert that the balance is correct
     expect(balance).to.equal(initialBalance);
   });
-
 });
-
