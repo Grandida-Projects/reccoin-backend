@@ -25,7 +25,7 @@ contract Recycle is Ownable {
     using SafeMath for uint256;
     using Address for address;
 
-    address immutable reccoinAddress;
+    address immutable recyloxAddress;
     address[] public companyAddresses;
     address[] public pickerAddresses;
     mapping(address => Company) public companies;
@@ -34,13 +34,13 @@ contract Recycle is Ownable {
     mapping(uint256 => Transaction) public transactions;
     bool private locked; // Boolean variable to track the reentrancy status of the contract.
 
-    constructor(address _reccoinAddress) {
+    constructor(address _recyloxAddress) {
         require(
-            _reccoinAddress != address(0),
+            _recyloxAddress != address(0),
             "Recycle: Can't assign a zero address"
         );
         totalTransactions = 0;
-        reccoinAddress = _reccoinAddress;
+        recyloxAddress = _recyloxAddress;
     }
 
     struct Company {
@@ -248,7 +248,7 @@ contract Recycle is Ownable {
      * @dev Track the balanceOf of token holders
      */
     function balanceOf() public view returns (uint256) {
-        return Recylox(reccoinAddress).balanceOf(msg.sender);
+        return Recylox(recyloxAddress).balanceOf(msg.sender);
     }
 
     /**
@@ -597,14 +597,14 @@ contract Recycle is Ownable {
             transactions[_transactionId].price
         );
 
-        Recylox recCoin = Recylox(reccoinAddress);
+        Recylox recylox = Recylox(recyloxAddress);
 
-        uint256 allowance = recCoin.allowance(msg.sender, address(this));
+        uint256 allowance = recylox.allowance(msg.sender, address(this));
         require(allowance >= amount, "Recycle: Insufficient allowance");
 
         transactions[_transactionId].isApproved = false;
 
-        bool transferSuccess = recCoin.transferFrom(
+        bool transferSuccess = recylox.transferFrom(
             msg.sender,
             _pickerAddress,
             amount
