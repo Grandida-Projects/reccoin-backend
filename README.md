@@ -141,7 +141,7 @@ the following public functions for external interaction:
 function balanceOf() public view returns (uint256)
 ```
 
-Retrieves the balance of tokens for the caller (company or picker).
+Retrieve the balance of tokens for the caller (company or picker).
 
 ### `registerCompany()`<a name="registercompany"></a>
 
