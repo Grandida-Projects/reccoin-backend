@@ -452,6 +452,17 @@ contract Recycle is Ownable {
     }
 
     /**
+     * @dev Gets content of the Picker struct since Solidity does not return arrays from structs inside mappings.
+     * @return picker The struct containing the information about registered pickers.
+     */
+
+     function getCompany(address _address) public view returns (Company memory) {
+        return companies[_address];
+    }
+
+    
+
+    /**
      * @dev Gets the count of registered pickers.
      * @return count The count of registered pickers.
      */
