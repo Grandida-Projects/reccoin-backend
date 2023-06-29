@@ -1,4 +1,4 @@
-#Section 1
+# Section 1
 
 # Recylox Token Contract Documentation
 
@@ -89,7 +89,7 @@ For a more detailed explanation of the Solidity language and how to use contract
 
 [1]: https://docs.soliditylang.org/
 
-#Section 2
+# Section 2
 
 # Recycle Smart Contract Documentation
 
