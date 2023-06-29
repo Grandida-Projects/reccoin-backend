@@ -81,7 +81,8 @@ describe("Recycle", function () {
     });
   });
 
-  // The following are tests on the getRegisteredCompanyCount function of the Recycle smart contract - line 175 of Recycle.sol
+
+  // The following are tests on the getRegisteredCompanyCount and getCompany functions of the Recycle smart contract - lines 307 and 454 of Recycle.sol
   describe("getRegisteredCompanyCount", function () {
     it("should return the correct count of registered companies", async function () {
       // Register a new company using the first signer
@@ -140,6 +141,34 @@ describe("Recycle", function () {
 
       // Check if the count corresponds to what is expected.
       expect(registeredCompanyCount).to.equal(3);
+
+      // also test the getCompany function
+      
+      const companyName1Address = await company.getAddress();
+      const companyName2Address = await secondCompany.getAddress();
+      const companyName3Address = await thirdCompany.getAddress();
+  
+      // Call the getCompany function
+      const companyName1Info = await recycle.getCompany(companyName1Address);
+      const ccompanyName2Info = await recycle.getCompany(companyName2Address);
+      const ccompanyName3Info = await recycle.getCompany(companyName3Address);
+  
+      // Verify the returned company information
+      expect(companyName1Info.name).to.equal("Company 1");
+      expect(companyName1Info.minWeightRequirement).to.equal(100);
+      expect(companyName1Info.maxPricePerKg).to.equal(10);
+      expect(companyName1Info.active).to.equal(true);
+  
+      expect(ccompanyName2Info.name).to.equal("Company 2");
+      expect(ccompanyName2Info.minWeightRequirement).to.equal(200);
+      expect(ccompanyName2Info.maxPricePerKg).to.equal(20);
+      expect(ccompanyName2Info.active).to.equal(true);
+
+      expect(ccompanyName3Info.name).to.equal("Company 3");
+      expect(ccompanyName3Info.minWeightRequirement).to.equal(300);
+      expect(ccompanyName3Info.maxPricePerKg).to.equal(30);
+      expect(ccompanyName3Info.active).to.equal(true);
+      
     });
   });
 
@@ -674,4 +703,7 @@ describe("Recycle", function () {
     // Assert that the balance is correct
     expect(balance).to.equal(initialBalance);
   });
+
+  // The following are tests on the getCompany function of the Recycle smart contract - line 412 of Recycle.sol
+
 });
