@@ -37,8 +37,7 @@
 6. [Security Considerations](#security-considerations)
 </details>
 
-<details open>
-<summary>Token Information</summary>
+## Token Information
 
 The Recylox token contract is an implementation of the ERC20 token standard in Solidity. It represents a token that can be used within the Ethereum ecosystem for various purposes. The contract defines the following token information:
 
@@ -46,7 +45,6 @@ The Recylox token contract is an implementation of the ERC20 token standard in S
 - `symbol`: The symbol of the token.
 - `decimals`: The number of decimal places for token display.
 - `totalSupply`: The total supply of the token.
-</details>
 
 ## Balances and Allowances
 
