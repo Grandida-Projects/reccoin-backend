@@ -2,7 +2,8 @@
 
 # Recylox Token Contract Documentation
 
-## Table of Contents
+<details open>
+<summary>Table of Contents</summary>
 
 - [Token Information](#token-information)
 - [Balances and Allowances](#balances-and-allowances)
@@ -34,6 +35,7 @@
 4. [Internal Functions](#internal-functions)
 5. [Usage](#usage)
 6. [Security Considerations](#security-considerations)
+</details>
 
 ## Token Information
 
