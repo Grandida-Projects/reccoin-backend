@@ -703,7 +703,4 @@ describe("Recycle", function () {
     // Assert that the balance is correct
     expect(balance).to.equal(initialBalance);
   });
-
-  // The following are tests on the getCompany function of the Recycle smart contract - line 412 of Recycle.sol
-
 });
