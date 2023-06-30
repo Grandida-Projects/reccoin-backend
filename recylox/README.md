@@ -1,5 +1,11 @@
 # Section 1
 
+Recylox Contract
+    - https://thirdweb.com/mumbai/0x509D44Bf4E1E5E696eA288eC4fF1114f79a09AC9
+
+Recycle Contract
+    - https://thirdweb.com/mumbai/0x96843178AEf01A428798177F45E809Dc6F7b76f2
+
 # Recylox Token Contract Documentation
 
 <details open>
